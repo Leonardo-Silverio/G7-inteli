@@ -71,14 +71,13 @@ def test_enums_values():
         PapelUsuario.ADMIN,
     ]
     assert list(StatusProjeto) == [
-        StatusProjeto.RASCUNHO,
-        StatusProjeto.IDEACAO,
-        StatusProjeto.DESENVOLVIMENTO,
-        StatusProjeto.PRE_LANCAMENTO,
-        StatusProjeto.APROVADO,
-        StatusProjeto.ADAPTACAO_SOLICITADA,
-        StatusProjeto.ENCERRADO,
+        StatusProjeto.EM_IDEACAO,
+        StatusProjeto.EM_DESENVOLVIMENTO,
+        StatusProjeto.AGUARDANDO_PRE_LANCAMENTO,
+        StatusProjeto.APROVADO_PARA_LANCAMENTO,
         StatusProjeto.LANCADO,
+        StatusProjeto.EM_ALERTA,
+        StatusProjeto.ENCERRADO,
     ]
     assert list(TipoCheckpoint) == [
         TipoCheckpoint.IDEACAO,

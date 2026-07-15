@@ -27,7 +27,7 @@ class Projeto(UUIDIdMixin, TimestampMixin, Base):
     )
     status: Mapped[StatusProjeto] = mapped_column(
         SQLEnum(StatusProjeto, name="status_projeto"),
-        default=StatusProjeto.RASCUNHO,
+        default=StatusProjeto.EM_IDEACAO,
         nullable=False,
     )
 

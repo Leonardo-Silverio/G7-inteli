@@ -78,11 +78,11 @@ Representa um projeto criado por uma Vertical.
 | objetivo | text | opcional |
 | vertical_id | UUID | FK → Vertical, not null |
 | criado_por_id | UUID | FK → Usuário, not null |
-| status | StatusProjeto | enum, default RASCUNHO |
+| status | StatusProjeto | enum, default EM_IDEACAO |
 | created_at | datetime(tz) | not null |
 | updated_at | datetime(tz) | not null |
 
-**StatusProjeto**: `RASCUNHO`, `IDEACAO`, `DESENVOLVIMENTO`, `PRE_LANCAMENTO`, `APROVADO`, `ADAPTACAO_SOLICITADA`, `ENCERRADO`, `LANCADO`
+**StatusProjeto**: `EM_IDEACAO`, `EM_DESENVOLVIMENTO`, `AGUARDANDO_PRE_LANCAMENTO`, `APROVADO_PARA_LANCAMENTO`, `LANCADO`, `EM_ALERTA`, `ENCERRADO`
 
 **Relacionamentos**
 - Pertence a uma Vertical
@@ -234,3 +234,4 @@ Mensagem individual dentro de uma conversa.
 - [ ] Resumos formais para Marketing
 - [ ] Notificações
 - [ ] Pipeline de decisão humana (aprovação/rejeição/adaptação)
+- [ ] Regra: projeto só pode ser aprovado para lançamento quando os três checkpoints estiverem CONCLUIDO

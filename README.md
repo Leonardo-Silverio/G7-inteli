@@ -158,6 +158,8 @@ Foram modeladas 8 entidades utilizando SQLAlchemy 2.0:
 
 `PapelUsuario`, `StatusProjeto`, `TipoCheckpoint`, `StatusCheckpoint`, `ClassificacaoFarol`, `TipoAlerta`, `StatusAlerta`, `DecisaoHumana`, `AutorMensagem`
 
+**StatusProjeto**: `EM_IDEACAO`, `EM_DESENVOLVIMENTO`, `AGUARDANDO_PRE_LANCAMENTO`, `APROVADO_PARA_LANCAMENTO`, `LANCADO`, `EM_ALERTA`, `ENCERRADO`
+
 ### Constraints relevantes
 
 - `uq_checkpoint_projeto_tipo`: unique `(projeto_id, tipo)` — cada projeto só pode ter um checkpoint de cada tipo
