@@ -4,6 +4,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
+per-file-ignores = {"app/models/*.py" = ["F821"]}
 
 [tool.ruff.format]
 quote-style = "double"

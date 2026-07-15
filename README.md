@@ -127,3 +127,74 @@ Isso iniciará:
 - **Frontend** na porta `8080`
 
 Acesse `http://localhost:8080` para ver a aplicação.
+
+## Entidades do Domínio (Sprint 2)
+
+Foram modeladas 8 entidades utilizando SQLAlchemy 2.0:
+
+| Entidade | Tabela | Propósito |
+|---|---|---|
+| **Vertical** | `verticals` | Área da empresa (Viagens, Conecta, etc.) |
+| **Usuário** | `usuarios` | Usuário da plataforma com papel (VERTICAL, MARKETING, LIDERANCA, ADMIN) |
+| **Projeto** | `projetos` | Projeto criado por uma Vertical |
+| **Checkpoint** | `checkpoints` | Etapa de avaliação (Ideação, Desenvolvimento, Pré-lançamento) |
+| **Avaliação** | `avaliacoes_checkpoint` | Resultado da avaliação de um checkpoint |
+| **Alerta** | `alertas` | Alerta gerado durante a avaliação |
+| **Conversa** | `conversas` | Conversa privada entre Vertical e agente IA |
+| **Mensagem** | `mensagens` | Mensagem individual dentro de uma conversa |
+
+### Relacionamentos principais
+
+- **Vertical** `1:N` **Usuário** — uma vertical possui vários usuários
+- **Vertical** `1:N` **Projeto** — uma vertical possui vários projetos
+- **Usuário** `1:N` **Projeto** — um usuário cria vários projetos
+- **Projeto** `1:N` **Checkpoint** — um projeto passa por 3 checkpoints
+- **Checkpoint** `1:1` **Avaliação** — cada checkpoint tem no máximo uma avaliação
+- **Projeto** `1:1` **Conversa** — um projeto possui no máximo uma conversa
+- **Conversa** `1:N` **Mensagem** — uma conversa possui várias mensagens
+- **Projeto** `1:N` **Alerta** — um projeto pode ter vários alertas
+
+### Enums
+
+`PapelUsuario`, `StatusProjeto`, `TipoCheckpoint`, `StatusCheckpoint`, `ClassificacaoFarol`, `TipoAlerta`, `StatusAlerta`, `DecisaoHumana`, `AutorMensagem`
+
+### Constraints relevantes
+
+- `uq_checkpoint_projeto_tipo`: unique `(projeto_id, tipo)` — cada projeto só pode ter um checkpoint de cada tipo
+- `ck_avaliacao_score_alinhamento` e `ck_avaliacao_score_potencial`: scores entre 0 e 100 quando preenchidos
+- `uq_avaliacao_checkpoint`: um checkpoint só pode ter uma avaliação
+
+## Migrações de Banco de Dados
+
+### Aplicar a migração inicial
+
+```bash
+cd backend
+alembic upgrade head
+```
+
+### Reverter a última migração
+
+```bash
+cd backend
+alembic downgrade -1
+```
+
+### Criar uma nova migração (após alterar os modelos)
+
+```bash
+cd backend
+alembic revision --autogenerate -m "descricao da alteracao"
+```
+
+Depois revise o arquivo gerado em `alembic/versions/` e aplique com `alembic upgrade head`.
+
+### Verificar o estado do banco
+
+```bash
+cd backend
+alembic current
+alembic history
+```
+
+Para mais detalhes do modelo de dados, consulte `docs/database-model.md`.
