@@ -8,7 +8,9 @@ from app.core.jwt import decode_access_token
 from app.database.database import get_db
 from app.models.enums import PapelUsuario
 from app.repositories.user_repository import UserRepository
+from app.repositories.projeto_repository import ProjetoRepository
 from app.services.auth_service import AuthService
+from app.services.projeto_service import ProjetoService
 from app.schemas.user import CurrentUser
 
 security = HTTPBearer(auto_error=False)
@@ -18,8 +20,16 @@ def get_user_repo(db=Depends(get_db)) -> UserRepository:
     return UserRepository(db)
 
 
+def get_projeto_repo(db=Depends(get_db)) -> ProjetoRepository:
+    return ProjetoRepository(db)
+
+
 def get_auth_service(user_repo=Depends(get_user_repo)) -> AuthService:
     return AuthService(user_repo)
+
+
+def get_projeto_service(repo=Depends(get_projeto_repo)) -> ProjetoService:
+    return ProjetoService(repo)
 
 
 async def get_current_user(

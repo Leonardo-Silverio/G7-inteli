@@ -1,3 +1,3 @@
-from app.routes import auth, users
+from app.routes import auth, users, projetos
 
-__all__ = ["auth", "users"]
+__all__ = ["auth", "users", "projetos"]
