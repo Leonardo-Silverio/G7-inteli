@@ -149,3 +149,30 @@ class TestPromptHash:
         h = calculate_criteria_hash()
         # Verify it's valid hex
         int(h, 16)
+
+    def test_prompt_contains_pontos_fortes_instruction(self):
+        for tipo in [TipoCheckpoint.IDEACAO, TipoCheckpoint.DESENVOLVIMENTO, TipoCheckpoint.PRE_LANCAMENTO]:
+            context = _make_context(tipo)
+            system, user = build_prompt(context)
+            full = system + user
+            assert "pontos_fortes" in full.lower()
+            assert "oportunidades_melhoria" in full.lower()
+            assert "recomendacoes_praticas" in full.lower()
+            assert "proximos_passos" in full
+            assert "riscos_principais" in full
+
+    def test_prompt_requires_structured_feedback_items(self):
+        context = _make_context(TipoCheckpoint.IDEACAO)
+        system, user = build_prompt(context)
+        full = system + user
+        assert "titulo" in full.lower()
+        assert "descricao" in full.lower()
+        assert "prioridade" in full.lower()
+
+    def test_prompt_still_forbids_ai_score_and_classification(self):
+        context = _make_context(TipoCheckpoint.IDEACAO)
+        system, user = build_prompt(context)
+        full = system + user
+        assert "não inclua" in full.lower() or "não calcule" in full.lower()
+        assert "score_alinhamento" in full
+        assert "classificacao_farol" in full

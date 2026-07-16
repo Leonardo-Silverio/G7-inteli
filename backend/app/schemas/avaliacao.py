@@ -1,6 +1,29 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 from app.models.enums import ClassificacaoFarol
+
+
+class FeedbackItem(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    titulo: str = Field(min_length=1)
+    descricao: str = Field(min_length=1)
+    evidencias: list[str] = Field(default_factory=list)
+    prioridade: Literal["ALTA", "MEDIA", "BAIXA"] | None = None
+
+
+class FeedbackEstruturado(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: str = "feedback_v1"
+    justificativa_classificacao: str = Field(min_length=1)
+    pontos_fortes: list[FeedbackItem]
+    oportunidades_melhoria: list[FeedbackItem]
+    recomendacoes_praticas: list[FeedbackItem]
+    proximos_passos: list[str] = Field(default_factory=list)
+    riscos_principais: list[FeedbackItem] = Field(default_factory=list)
 
 class CriterioAvaliacao(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
@@ -41,6 +64,11 @@ class AvaliacaoIAOutput(BaseModel):
     criterios_potencial: CriteriosPotencial
     feedback_geral: str = Field(min_length=1)
     resumo_para_marketing: str = Field(min_length=1)
+    pontos_fortes: list[FeedbackItem] = Field(min_length=1)
+    oportunidades_melhoria: list[FeedbackItem] = Field(min_length=1)
+    recomendacoes_praticas: list[FeedbackItem] = Field(min_length=1)
+    proximos_passos: list[str] = Field(default_factory=list)
+    riscos_principais: list[FeedbackItem] = Field(default_factory=list)
 
 
 class ContribuicaoCriterio(BaseModel):
@@ -64,3 +92,8 @@ class AvaliacaoCalculada(BaseModel):
     resumo_para_marketing: str
     contribuicoes_alinhamento: list[ContribuicaoCriterio] = Field(default_factory=list)
     contribuicoes_potencial: list[ContribuicaoCriterio] = Field(default_factory=list)
+    pontos_fortes: list[FeedbackItem] = Field(default_factory=list)
+    oportunidades_melhoria: list[FeedbackItem] = Field(default_factory=list)
+    recomendacoes_praticas: list[FeedbackItem] = Field(default_factory=list)
+    proximos_passos: list[str] = Field(default_factory=list)
+    riscos_principais: list[FeedbackItem] = Field(default_factory=list)

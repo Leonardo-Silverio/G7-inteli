@@ -26,6 +26,7 @@ from app.schemas.avaliacao import (
     CriterioAvaliacao,
     CriteriosAlinhamento,
     CriteriosPotencial,
+    FeedbackItem,
 )
 
 
@@ -58,6 +59,11 @@ def _valid_ia_output() -> AvaliacaoIAOutput:
         criterios_potencial=potencial,
         feedback_geral="Feedback geral da IA",
         resumo_para_marketing="Resumo para marketing",
+        pontos_fortes=[FeedbackItem(titulo="Pf1", descricao="Ponto forte 1")],
+        oportunidades_melhoria=[FeedbackItem(titulo="Op1", descricao="Oportunidade 1")],
+        recomendacoes_praticas=[FeedbackItem(titulo="Re1", descricao="Recomendacao 1")],
+        proximos_passos=["Proximo passo"],
+        riscos_principais=[FeedbackItem(titulo="Ri1", descricao="Risco 1", prioridade="BAIXA")],
     )
 
 
@@ -163,7 +169,7 @@ class TestAIEvaluationIntegration:
         # Verify D9 metadata
         assert avaliacao.evaluation_engine == "farol-engine-v1"
         assert avaliacao.modelo == settings.DEEPSEEK_MODEL
-        assert avaliacao.prompt_version == "checkpoint_v1"
+        assert avaliacao.prompt_version == "checkpoint_v2"
         assert avaliacao.criteria_version == "business_rules_2026_07"
         assert avaliacao.prompt_hash is not None
         assert len(avaliacao.prompt_hash) == 64
@@ -602,7 +608,7 @@ class TestAIEvaluationIntegration:
         # Verify all D9 metadata
         assert avaliacao.evaluation_engine == "farol-engine-v1"
         assert avaliacao.modelo == settings.DEEPSEEK_MODEL
-        assert avaliacao.prompt_version == "checkpoint_v1"
+        assert avaliacao.prompt_version == "checkpoint_v2"
         assert avaliacao.criteria_version == "business_rules_2026_07"
         assert avaliacao.prompt_hash is not None
         assert len(avaliacao.prompt_hash) == 64

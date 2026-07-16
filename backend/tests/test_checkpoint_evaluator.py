@@ -15,6 +15,10 @@ from app.schemas.avaliacao import (
 )
 
 
+def _feedback_item_dict(titulo="Item", descricao="Descricao", prioridade="ALTA"):
+    return {"titulo": titulo, "descricao": descricao, "evidencias": ["ev"], "prioridade": prioridade}
+
+
 def _valid_ia_output() -> dict:
     criterio = {
         "nota": 80,
@@ -39,6 +43,11 @@ def _valid_ia_output() -> dict:
         "criterios_potencial": potencial,
         "feedback_geral": "Feedback geral da avaliação",
         "resumo_para_marketing": "Resumo para marketing",
+        "pontos_fortes": [_feedback_item_dict("Pf1", "Ponto forte 1")],
+        "oportunidades_melhoria": [_feedback_item_dict("Op1", "Oportunidade 1")],
+        "recomendacoes_praticas": [_feedback_item_dict("Re1", "Recomendacao 1")],
+        "proximos_passos": ["Proximo passo 1"],
+        "riscos_principais": [_feedback_item_dict("Ri1", "Risco 1", "BAIXA")],
     }
 
 
@@ -67,8 +76,13 @@ class TestCheckpointAIEvaluator:
         assert isinstance(avaliacao, AvaliacaoIAOutput)
         assert avaliacao.feedback_geral == "Feedback geral da avaliação"
         assert avaliacao.resumo_para_marketing == "Resumo para marketing"
-        assert len(avaliacao.criterios_alinhamento.__dict__) == 6
-        assert len(avaliacao.criterios_potencial.__dict__) == 6
+        assert len(avaliacao.criterios_alinhamento.model_fields) == 6
+        assert len(avaliacao.criterios_potencial.model_fields) == 6
+        assert len(avaliacao.pontos_fortes) == 1
+        assert len(avaliacao.oportunidades_melhoria) == 1
+        assert len(avaliacao.recomendacoes_praticas) == 1
+        assert len(avaliacao.proximos_passos) == 1
+        assert len(avaliacao.riscos_principais) == 1
 
     def test_missing_criterion_rejected(self):
         invalid_output = _valid_ia_output()
@@ -117,6 +131,66 @@ class TestCheckpointAIEvaluator:
         invalid_output["score_alinhamento"] = 85
         invalid_output["score_potencial"] = 90
         invalid_output["classificacao_farol"] = "PRIORIDADE_MAXIMA"
+
+        provider = FakeAIProvider(response=invalid_output)
+        evaluator = CheckpointAIEvaluator(provider)
+
+        with pytest.raises(AIResponseValidationError):
+            evaluator.evaluate(_make_context())
+
+    def test_missing_pontos_fortes_rejected(self):
+        invalid_output = _valid_ia_output()
+        del invalid_output["pontos_fortes"]
+
+        provider = FakeAIProvider(response=invalid_output)
+        evaluator = CheckpointAIEvaluator(provider)
+
+        with pytest.raises(AIResponseValidationError):
+            evaluator.evaluate(_make_context())
+
+    def test_empty_pontos_fortes_rejected(self):
+        invalid_output = _valid_ia_output()
+        invalid_output["pontos_fortes"] = []
+
+        provider = FakeAIProvider(response=invalid_output)
+        evaluator = CheckpointAIEvaluator(provider)
+
+        with pytest.raises(AIResponseValidationError):
+            evaluator.evaluate(_make_context())
+
+    def test_feedback_item_empty_titulo_rejected(self):
+        invalid_output = _valid_ia_output()
+        invalid_output["pontos_fortes"] = [{"titulo": "", "descricao": "desc", "prioridade": "ALTA"}]
+
+        provider = FakeAIProvider(response=invalid_output)
+        evaluator = CheckpointAIEvaluator(provider)
+
+        with pytest.raises(AIResponseValidationError):
+            evaluator.evaluate(_make_context())
+
+    def test_feedback_item_empty_descricao_rejected(self):
+        invalid_output = _valid_ia_output()
+        invalid_output["pontos_fortes"] = [{"titulo": "tit", "descricao": "", "prioridade": "ALTA"}]
+
+        provider = FakeAIProvider(response=invalid_output)
+        evaluator = CheckpointAIEvaluator(provider)
+
+        with pytest.raises(AIResponseValidationError):
+            evaluator.evaluate(_make_context())
+
+    def test_feedback_item_invalid_prioridade_rejected(self):
+        invalid_output = _valid_ia_output()
+        invalid_output["pontos_fortes"] = [{"titulo": "tit", "descricao": "desc", "prioridade": "INVALIDA"}]
+
+        provider = FakeAIProvider(response=invalid_output)
+        evaluator = CheckpointAIEvaluator(provider)
+
+        with pytest.raises(AIResponseValidationError):
+            evaluator.evaluate(_make_context())
+
+    def test_feedback_item_extra_field_rejected(self):
+        invalid_output = _valid_ia_output()
+        invalid_output["pontos_fortes"] = [{"titulo": "tit", "descricao": "desc", "extra": "campo"}]
 
         provider = FakeAIProvider(response=invalid_output)
         evaluator = CheckpointAIEvaluator(provider)
@@ -179,8 +253,6 @@ class TestCheckpointAIEvaluator:
         provider = FakeAIProvider(response=_valid_ia_output())
         evaluator = CheckpointAIEvaluator(provider)
 
-        # O avaliador não deve importar nem chamar EvaluationEngine
-        # Verificamos indiretamente: o resultado não tem scores calculados
         avaliacao, _ = evaluator.evaluate(_make_context())
 
         assert not hasattr(avaliacao, "score_alinhamento")
@@ -188,18 +260,17 @@ class TestCheckpointAIEvaluator:
         assert not hasattr(avaliacao, "classificacao_farol")
 
     def test_evaluator_does_not_access_database(self):
-        # O avaliador recebe contexto pronto, não busca nada no banco
         provider = FakeAIProvider(response=_valid_ia_output())
         evaluator = CheckpointAIEvaluator(provider)
 
-        # Não deve haver nenhuma query de banco
         avaliacao, metadata = evaluator.evaluate(_make_context())
 
         assert isinstance(avaliacao, AvaliacaoIAOutput)
         assert metadata.evaluation_engine == "farol-engine-v1"
         assert metadata.modelo == settings.DEEPSEEK_MODEL
-        assert metadata.prompt_version == "checkpoint_v1"
+        assert metadata.prompt_version == "checkpoint_v2"
         assert metadata.criteria_version == "business_rules_2026_07"
+        assert metadata.output_schema_version == "feedback_v1"
         assert len(metadata.prompt_hash) == 64
         assert len(metadata.criteria_hash) == 64
 

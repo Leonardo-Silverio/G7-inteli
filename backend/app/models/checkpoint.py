@@ -87,6 +87,7 @@ class AvaliacaoCheckpoint(UUIDIdMixin, TimestampMixin, Base):
     criterios_alinhamento: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     criterios_potencial: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     explicacoes: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    feedback_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     feedback_geral: Mapped[str | None] = mapped_column(Text, nullable=True)
     resumo_para_marketing: Mapped[str | None] = mapped_column(Text, nullable=True)
 

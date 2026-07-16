@@ -20,6 +20,7 @@ from app.schemas.avaliacao import (
     CriteriosPotencial,
     ClassificacaoFarol as SchemaClassificacaoFarol,
     ContribuicaoCriterio,
+    FeedbackItem,
 )
 from app.schemas.avaliacao_response import (
     AvaliacaoCheckpointResponse,
@@ -68,6 +69,11 @@ def _ia_output(alinhamento: float = 80, potencial: float = 80) -> AvaliacaoIAOut
         criterios_potencial=_potencial_todos(potencial),
         feedback_geral="Feedback geral da avaliacao",
         resumo_para_marketing="Resumo para marketing",
+        pontos_fortes=[FeedbackItem(titulo="Pf1", descricao="Ponto forte 1")],
+        oportunidades_melhoria=[FeedbackItem(titulo="Op1", descricao="Oportunidade 1")],
+        recomendacoes_praticas=[FeedbackItem(titulo="Re1", descricao="Recomendacao 1")],
+        proximos_passos=["Proximo passo"],
+        riscos_principais=[FeedbackItem(titulo="Ri1", descricao="Risco 1", prioridade="BAIXA")],
     )
 
 
@@ -673,6 +679,10 @@ class TestAvaliacaoService:
             criterios_potencial=potencial,
             feedback_geral="Feedback",
             resumo_para_marketing="Resumo",
+            pontos_fortes=[FeedbackItem(titulo="Pf1", descricao="Ponto forte 1")],
+            oportunidades_melhoria=[FeedbackItem(titulo="Op1", descricao="Oportunidade 1")],
+            recomendacoes_praticas=[FeedbackItem(titulo="Re1", descricao="Recomendacao 1")],
+            proximos_passos=["Proximo passo"],
         )
 
         result = service.create_evaluation(
@@ -868,6 +878,10 @@ class TestAvaliacaoService:
             criterios_potencial=potencial,
             feedback_geral="Feedback",
             resumo_para_marketing="Resumo",
+            pontos_fortes=[FeedbackItem(titulo="Pf1", descricao="Ponto forte 1")],
+            oportunidades_melhoria=[FeedbackItem(titulo="Op1", descricao="Oportunidade 1")],
+            recomendacoes_praticas=[FeedbackItem(titulo="Re1", descricao="Recomendacao 1")],
+            proximos_passos=["Proximo passo"],
         )
 
         result = service.create_evaluation(
@@ -885,6 +899,249 @@ class TestAvaliacaoService:
 
 
 class TestCheckpointAvaliacoesRelationship:
+    def test_feedback_json_persisted_with_schema_version(self, db):
+        avaliacao_repo = AvaliacaoRepository(db)
+        checkpoint_repo = CheckpointRepository(db)
+        service = AvaliacaoService(avaliacao_repo, checkpoint_repo)
+
+        vertical = Vertical(nome="Test Vertical")
+        db.add(vertical)
+        db.flush()
+
+        usuario = Usuario(
+            nome="Test User",
+            email="test@test.com",
+            senha_hash="hash",
+            papel="VERTICAL",
+            vertical_id=vertical.id,
+        )
+        db.add(usuario)
+        db.flush()
+
+        projeto = Projeto(
+            titulo="Test Project",
+            vertical_id=vertical.id,
+            criado_por_id=usuario.id,
+        )
+        db.add(projeto)
+        db.flush()
+
+        checkpoint = Checkpoint(
+            projeto_id=projeto.id,
+            tipo=TipoCheckpoint.IDEACAO,
+            status=StatusCheckpoint.CONCLUIDO,
+        )
+        db.add(checkpoint)
+        db.flush()
+
+        result = service.create_evaluation(
+            checkpoint_id=checkpoint.id,
+            ia_output=_ia_output(),
+            modelo="gpt-4o",
+            prompt_version="checkpoint_v2",
+            criteria_version="business_rules_2026_07",
+            prompt_hash="a" * 64,
+            criteria_hash="b" * 64,
+        )
+
+        assert result.feedback is not None
+        assert result.feedback.schema_version == "feedback_v1"
+        assert len(result.feedback.pontos_fortes) > 0
+        assert len(result.feedback.oportunidades_melhoria) > 0
+        assert len(result.feedback.recomendacoes_praticas) > 0
+        assert result.feedback.justificativa_classificacao != ""
+        assert "PRIORIDADE" in result.feedback.justificativa_classificacao.upper()
+
+    def _valid_criterios_dict(self) -> dict:
+        c = {"nota": 80, "feedback": "Ok", "evidencias": [], "sugestoes": [], "confianca": 90}
+        return {k: dict(c) for k in [
+            "tom_de_voz_azul", "identidade_visual_azul", "posicionamento_malha_regional",
+            "uso_correto_produtos_marca", "seguranca_solidez", "clareza_passageiro"
+        ]}
+
+    def _valid_potencial_dict(self) -> dict:
+        c = {"nota": 80, "feedback": "Ok", "evidencias": [], "sugestoes": [], "confianca": 90}
+        return {k: dict(c) for k in [
+            "pilares_estrategicos_atuais", "receita_produtos_proprios", "alcance_malha_regional",
+            "diferenciacao_gol_latam", "recuperacao_fidelizacao_cliente", "viabilidade_operacional"
+        ]}
+
+    def test_feedback_json_includes_scores_in_justificativa(self, db):
+        avaliacao_repo = AvaliacaoRepository(db)
+        checkpoint_repo = CheckpointRepository(db)
+        service = AvaliacaoService(avaliacao_repo, checkpoint_repo)
+
+        vertical = Vertical(nome="Test Vertical")
+        db.add(vertical)
+        db.flush()
+
+        usuario = Usuario(
+            nome="Test User",
+            email="test@test.com",
+            senha_hash="hash",
+            papel="VERTICAL",
+            vertical_id=vertical.id,
+        )
+        db.add(usuario)
+        db.flush()
+
+        projeto = Projeto(
+            titulo="Test Project",
+            vertical_id=vertical.id,
+            criado_por_id=usuario.id,
+        )
+        db.add(projeto)
+        db.flush()
+
+        checkpoint = Checkpoint(
+            projeto_id=projeto.id,
+            tipo=TipoCheckpoint.IDEACAO,
+            status=StatusCheckpoint.CONCLUIDO,
+        )
+        db.add(checkpoint)
+        db.flush()
+
+        result = service.create_evaluation(
+            checkpoint_id=checkpoint.id,
+            ia_output=_ia_output(alinhamento=100, potencial=59.99),
+            modelo="gpt-4o",
+            prompt_version="checkpoint_v2",
+            criteria_version="business_rules_2026_07",
+            prompt_hash="a" * 64,
+            criteria_hash="b" * 64,
+        )
+
+        assert result.classificacao_farol == ClassificacaoFarol.BAIXA_PRIORIDADE
+        assert result.feedback is not None
+        assert "BAIXA" in result.feedback.justificativa_classificacao.upper()
+        assert "BAIXA PRIORIDADE" in result.feedback.justificativa_classificacao
+        assert "100" in result.feedback.justificativa_classificacao
+
+    def test_old_evaluation_without_feedback_json_still_readable(self, db):
+        avaliacao_repo = AvaliacaoRepository(db)
+        checkpoint_repo = CheckpointRepository(db)
+        service = AvaliacaoService(avaliacao_repo, checkpoint_repo)
+
+        vertical = Vertical(nome="Test Vertical")
+        db.add(vertical)
+        db.flush()
+
+        usuario = Usuario(
+            nome="Test User",
+            email="test@test.com",
+            senha_hash="hash",
+            papel="VERTICAL",
+            vertical_id=vertical.id,
+        )
+        db.add(usuario)
+        db.flush()
+
+        projeto = Projeto(
+            titulo="Test Project",
+            vertical_id=vertical.id,
+            criado_por_id=usuario.id,
+        )
+        db.add(projeto)
+        db.flush()
+
+        checkpoint = Checkpoint(
+            projeto_id=projeto.id,
+            tipo=TipoCheckpoint.IDEACAO,
+            status=StatusCheckpoint.CONCLUIDO,
+        )
+        db.add(checkpoint)
+        db.flush()
+
+        # Create evaluation directly without feedback_json (simulating old record)
+        old_avaliacao = AvaliacaoCheckpoint(
+            checkpoint_id=checkpoint.id,
+            score_alinhamento=80,
+            score_potencial=80,
+            classificacao_farol=ClassificacaoFarol.PRIORIDADE_MAXIMA,
+            criterios_alinhamento=self._valid_criterios_dict(),
+            criterios_potencial=self._valid_potencial_dict(),
+            feedback_geral="Old feedback",
+            resumo_para_marketing="Old resumo",
+            feedback_json=None,
+            evaluation_engine="farol-engine-v1",
+            modelo="gpt-4o",
+            prompt_version="checkpoint_v1",
+            criteria_version="business_rules_2026_07",
+            prompt_hash="a" * 64,
+            criteria_hash="b" * 64,
+            evaluated_at=datetime.now(timezone.utc),
+        )
+        db.add(old_avaliacao)
+        db.flush()
+
+        # Read back via service response
+        latest = service.get_latest(checkpoint.id)
+        assert latest.avaliacao is not None
+        assert latest.avaliacao.feedback_geral == "Old feedback"
+        assert latest.avaliacao.feedback is None
+
+    def test_append_only_preserved_with_new_fields(self, db):
+        avaliacao_repo = AvaliacaoRepository(db)
+        checkpoint_repo = CheckpointRepository(db)
+        service = AvaliacaoService(avaliacao_repo, checkpoint_repo)
+
+        vertical = Vertical(nome="Test Vertical")
+        db.add(vertical)
+        db.flush()
+
+        usuario = Usuario(
+            nome="Test User",
+            email="test@test.com",
+            senha_hash="hash",
+            papel="VERTICAL",
+            vertical_id=vertical.id,
+        )
+        db.add(usuario)
+        db.flush()
+
+        projeto = Projeto(
+            titulo="Test Project",
+            vertical_id=vertical.id,
+            criado_por_id=usuario.id,
+        )
+        db.add(projeto)
+        db.flush()
+
+        checkpoint = Checkpoint(
+            projeto_id=projeto.id,
+            tipo=TipoCheckpoint.IDEACAO,
+            status=StatusCheckpoint.CONCLUIDO,
+        )
+        db.add(checkpoint)
+        db.flush()
+
+        r1 = service.create_evaluation(
+            checkpoint_id=checkpoint.id,
+            ia_output=_ia_output(70, 65),
+            modelo="gpt-4o",
+            prompt_version="v1",
+            criteria_version="v1",
+            prompt_hash="a" * 64,
+            criteria_hash="b" * 64,
+        )
+        r2 = service.create_evaluation(
+            checkpoint_id=checkpoint.id,
+            ia_output=_ia_output(85, 80),
+            modelo="gpt-5",
+            prompt_version="v2",
+            criteria_version="v2",
+            prompt_hash="c" * 64,
+            criteria_hash="d" * 64,
+        )
+
+        assert r1.id != r2.id
+        assert r2.score_alinhamento == 85.0
+        assert r2.feedback is not None
+        assert r2.feedback.schema_version == "feedback_v1"
+
+        history = service.list_history(checkpoint.id)
+        assert history.total == 2
+
     def test_checkpoint_has_avaliacoes_relationship(self, db):
         vertical = Vertical(nome="Test Vertical")
         db.add(vertical)

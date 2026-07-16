@@ -195,7 +195,10 @@ class TestGetAIProvider:
                 system_prompt="system",
                 user_prompt="user",
             )
-            assert result == {}
+            assert "criterios_alinhamento" in result
+            assert "criterios_potencial" in result
+            assert "feedback_geral" in result
+            assert result["feedback_geral"] != ""
 
     def test_no_real_api_call_during_tests(self):
         with patch.object(settings, "DEEPSEEK_API_KEY", "test-key"):

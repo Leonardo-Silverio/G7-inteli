@@ -118,7 +118,47 @@ class FakeAIProvider:
         return self._response
 
 
+def _default_fake_response() -> dict[str, Any]:
+    _criterio = lambda nota: {"nota": nota, "feedback": "Adequado ao esperado", "evidencias": ["Evidência disponível"], "sugestoes": ["Manter padrão"], "confianca": 85}
+    return {
+        "criterios_alinhamento": {
+            "tom_de_voz_azul": _criterio(80),
+            "identidade_visual_azul": _criterio(75),
+            "posicionamento_malha_regional": _criterio(70),
+            "uso_correto_produtos_marca": _criterio(85),
+            "seguranca_solidez": _criterio(90),
+            "clareza_passageiro": _criterio(80),
+        },
+        "criterios_potencial": {
+            "pilares_estrategicos_atuais": _criterio(75),
+            "receita_produtos_proprios": _criterio(70),
+            "alcance_malha_regional": _criterio(80),
+            "diferenciacao_gol_latam": _criterio(65),
+            "recuperacao_fidelizacao_cliente": _criterio(70),
+            "viabilidade_operacional": _criterio(85),
+        },
+        "feedback_geral": "O projeto apresenta bom alinhamento com a estratégia da Azul, com destaque para o posicionamento regional e a segurança da marca. O potencial de mercado é promissor, especialmente na ampliação da malha regional.",
+        "resumo_para_marketing": "Projeto bem alinhado à estratégia regional da Azul, com boa viabilidade operacional e potencial de receita. Recomenda-se atenção à diferenciação frente aos concorrentes.",
+        "pontos_fortes": [
+            {"titulo": "Alinhamento Estratégico", "descricao": "Projeto fortemente alinhado aos pilares estratégicos atuais da Azul", "evidencias": ["Foco em malha regional"], "prioridade": "ALTA"},
+            {"titulo": "Segurança da Marca", "descricao": "Preserva e reforça a segurança e solidez da marca Azul", "evidencias": ["Produto bem posicionado"], "prioridade": "ALTA"},
+        ],
+        "oportunidades_melhoria": [
+            {"titulo": "Diferenciação Competitiva", "descricao": "Necessário fortalecer a diferenciação em relação à GOL e LATAM", "evidencias": ["Mercado competitivo"], "prioridade": "ALTA"},
+            {"titulo": "Estratégia de Receita", "descricao": "Oportunidade de explorar melhor produtos proprietários", "evidencias": ["Receita concentrada"], "prioridade": "MEDIA"},
+        ],
+        "recomendacoes_praticas": [
+            {"titulo": "Reforçar Diferenciais", "descricao": "Criar campanha destacando os diferenciais da nova rota", "evidencias": [], "prioridade": "ALTA"},
+            {"titulo": "Monitorar Concorrência", "descricao": "Acompanhar movimentação da concorrência nas rotas regionais", "evidencias": [], "prioridade": "MEDIA"},
+        ],
+        "proximos_passos": ["Detalhar plano de lançamento", "Definir estratégia de precificação", "Preparar materiais de comunicação"],
+        "riscos_principais": [
+            {"titulo": "Concorrência Acirrada", "descricao": "Possível reação da concorrência nas rotas regionais", "evidencias": ["Histórico do mercado"], "prioridade": "ALTA"},
+        ],
+    }
+
+
 def get_ai_provider() -> AIProvider:
     if settings.DEEPSEEK_API_KEY:
         return DeepSeekProvider()
-    return FakeAIProvider()
+    return FakeAIProvider(response=_default_fake_response())

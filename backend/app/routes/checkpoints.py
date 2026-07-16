@@ -17,6 +17,10 @@ from app.schemas.avaliacao_response import (
     AvaliacaoLatestResponse,
     AvaliacaoHistoryResponse,
 )
+from app.schemas.comparacao import (
+    ComparacaoAvaliacaoResponse,
+    EvolucaoAvaliacaoResponse,
+)
 from app.services.checkpoint_service import (
     CheckpointService,
     ProjetoNotFoundForCheckpointError,
@@ -30,7 +34,12 @@ from app.services.checkpoint_service import (
     CheckpointValidationError,
     AttachmentRequiredError,
 )
-from app.services.avaliacao_service import AvaliacaoService, CheckpointNotFoundError as AvaliacaoCheckpointNotFoundError
+from app.services.avaliacao_service import (
+    AvaliacaoService,
+    CheckpointNotFoundError as AvaliacaoCheckpointNotFoundError,
+    CriteriaVersionMismatchError,
+    NotEnoughEvaluationsError,
+)
 from app.schemas.user import CurrentUser
 from app.models.enums import TipoCheckpoint
 from app.dependencies.auth import get_checkpoint_service, get_avaliacao_service
@@ -211,5 +220,90 @@ def get_evaluation_history(
             raise CheckpointNotFoundError("Checkpoint não encontrado")
 
         return avaliacao_service.list_history(checkpoint.id)
+    except (ProjetoNotFoundForCheckpointError, CheckpointNotFoundError, CheckpointAuthorizationError, AvaliacaoCheckpointNotFoundError) as e:
+        raise _handle_service_error(e)
+
+
+@router.get(
+    "/{tipo}/avaliacao/comparar",
+    response_model=ComparacaoAvaliacaoResponse,
+    status_code=status.HTTP_200_OK,
+)
+def compare_evaluations(
+    projeto_id: UUID,
+    tipo: TipoCheckpoint,
+    atual_id: UUID,
+    anterior_id: UUID,
+    current_user: CurrentUser = Depends(get_current_user),
+    checkpoint_service: CheckpointService = Depends(get_checkpoint_service),
+    avaliacao_service: AvaliacaoService = Depends(get_avaliacao_service),
+) -> ComparacaoAvaliacaoResponse:
+    try:
+        projeto = checkpoint_service._get_projeto_or_raise(projeto_id)
+        checkpoint_service._authorize_view_checkpoint(projeto, current_user)
+        checkpoint = checkpoint_service.checkpoint_repo.get_checkpoint_by_projeto_and_tipo(
+            projeto_id, tipo
+        )
+        if not checkpoint:
+            raise CheckpointNotFoundError("Checkpoint não encontrado")
+        return avaliacao_service.compare_evaluations(atual_id, anterior_id)
+    except (ProjetoNotFoundForCheckpointError, CheckpointNotFoundError, CheckpointAuthorizationError, AvaliacaoCheckpointNotFoundError) as e:
+        raise _handle_service_error(e)
+    except CriteriaVersionMismatchError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except NotEnoughEvaluationsError as e:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
+
+
+@router.get(
+    "/{tipo}/avaliacao/comparacao-latest",
+    response_model=ComparacaoAvaliacaoResponse,
+    status_code=status.HTTP_200_OK,
+)
+def compare_latest_evaluation(
+    projeto_id: UUID,
+    tipo: TipoCheckpoint,
+    current_user: CurrentUser = Depends(get_current_user),
+    checkpoint_service: CheckpointService = Depends(get_checkpoint_service),
+    avaliacao_service: AvaliacaoService = Depends(get_avaliacao_service),
+) -> ComparacaoAvaliacaoResponse:
+    try:
+        projeto = checkpoint_service._get_projeto_or_raise(projeto_id)
+        checkpoint_service._authorize_view_checkpoint(projeto, current_user)
+        checkpoint = checkpoint_service.checkpoint_repo.get_checkpoint_by_projeto_and_tipo(
+            projeto_id, tipo
+        )
+        if not checkpoint:
+            raise CheckpointNotFoundError("Checkpoint não encontrado")
+        return avaliacao_service.compare_latest_with_previous(checkpoint.id)
+    except (ProjetoNotFoundForCheckpointError, CheckpointNotFoundError, CheckpointAuthorizationError, AvaliacaoCheckpointNotFoundError) as e:
+        raise _handle_service_error(e)
+    except CriteriaVersionMismatchError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except NotEnoughEvaluationsError as e:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
+
+
+@router.get(
+    "/{tipo}/avaliacao/evolucao",
+    response_model=EvolucaoAvaliacaoResponse,
+    status_code=status.HTTP_200_OK,
+)
+def get_evaluation_evolution(
+    projeto_id: UUID,
+    tipo: TipoCheckpoint,
+    current_user: CurrentUser = Depends(get_current_user),
+    checkpoint_service: CheckpointService = Depends(get_checkpoint_service),
+    avaliacao_service: AvaliacaoService = Depends(get_avaliacao_service),
+) -> EvolucaoAvaliacaoResponse:
+    try:
+        projeto = checkpoint_service._get_projeto_or_raise(projeto_id)
+        checkpoint_service._authorize_view_checkpoint(projeto, current_user)
+        checkpoint = checkpoint_service.checkpoint_repo.get_checkpoint_by_projeto_and_tipo(
+            projeto_id, tipo
+        )
+        if not checkpoint:
+            raise CheckpointNotFoundError("Checkpoint não encontrado")
+        return avaliacao_service.get_evolution(checkpoint.id)
     except (ProjetoNotFoundForCheckpointError, CheckpointNotFoundError, CheckpointAuthorizationError, AvaliacaoCheckpointNotFoundError) as e:
         raise _handle_service_error(e)

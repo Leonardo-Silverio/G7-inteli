@@ -11,6 +11,7 @@ from app.ai.checkpoint_prompt import (
     PROMPT_VERSION,
     CRITERIA_VERSION,
     EVALUATION_ENGINE,
+    OUTPUT_SCHEMA_VERSION,
     CheckpointEvaluationContext,
 )
 from app.schemas.avaliacao import AvaliacaoIAOutput
@@ -24,6 +25,7 @@ class EvaluationMetadata:
     criteria_version: str
     prompt_hash: str
     criteria_hash: str
+    output_schema_version: str
 
 
 class CheckpointAIEvaluator:
@@ -72,6 +74,7 @@ class CheckpointAIEvaluator:
             criteria_version=self.criteria_version,
             prompt_hash=prompt_hash,
             criteria_hash=criteria_hash,
+            output_schema_version=OUTPUT_SCHEMA_VERSION,
         )
 
         return avaliacao, metadata

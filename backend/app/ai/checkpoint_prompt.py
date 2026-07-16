@@ -62,10 +62,14 @@ REGRAS OBRIGATÓRIAS:
 4. Para cada critério, forneça: nota (0-100), feedback (string não vazia), evidencias (array), sugestoes (array), confianca (0-100 opcional).
 5. Feedback deve ser específico e acionável.
 6. Evidencias devem citar trechos das respostas do formulário.
-7. feedback_geral e resumo_para_marketing são obrigatórios.
+7. Os campos abaixo são obrigatórios: feedback_geral, resumo_para_marketing, pontos_fortes, oportunidades_melhoria, recomendacoes_praticas.
 8. NÃO use markdown, comentários ou texto extra.
 9. O resumo_para_marketing deve ser adequado para a área de Marketing: sem dados sensíveis, sem conversa bruta, sem invenções.
-10. Regras de privacidade: não exponha dados pessoais, não reproduza conversa bruta, não invente fatos."""
+10. Regras de privacidade: não exponha dados pessoais, não reproduza conversa bruta, não invente fatos.
+11. pontos_fortes, oportunidades_melhoria, recomendacoes_praticas e riscos_principais são listas de objetos com: titulo (string curta), descricao (detalhamento), evidencias (lista de strings citando o formulário), prioridade (opcional: "ALTA", "MEDIA" ou "BAIXA").
+12. proximos_passos é uma lista de strings com ações concretas recomendadas.
+13. Cada item em pontos_fortes, oportunidades_melhoria, recomendacoes_praticas e riscos_principais deve ter titulo e descricao não vazios, específicos ao projeto avaliado.
+14. Evite frases genéricas, recomendações vagas, repetição e linguagem excessivamente promocional."""
 
 
 CRITERIOS_ALINHAMENTO = {
@@ -197,10 +201,26 @@ Retorne JSON com a estrutura exata:
   "criterios_alinhamento": {{...}},
   "criterios_potencial": {{...}},
   "feedback_geral": "...",
-  "resumo_para_marketing": "..."
+  "resumo_para_marketing": "...",
+  "pontos_fortes": [
+    {{"titulo": "...", "descricao": "...", "evidencias": ["..."], "prioridade": "ALTA"}}
+  ],
+  "oportunidades_melhoria": [
+    {{"titulo": "...", "descricao": "...", "evidencias": ["..."], "prioridade": "MEDIA"}}
+  ],
+  "recomendacoes_praticas": [
+    {{"titulo": "...", "descricao": "...", "evidencias": ["..."], "prioridade": "ALTA"}}
+  ],
+  "proximos_passos": ["..."],
+  "riscos_principais": [
+    {{"titulo": "...", "descricao": "...", "evidencias": ["..."], "prioridade": "ALTA"}}
+  ]
 }}
 
-Cada critério deve ter: nota, feedback, evidencias, sugestoes, confianca (opcional)."""
+Cada critério deve ter: nota, feedback, evidencias, sugestoes, confianca (opcional).
+Cada item em pontos_fortes, oportunidades_melhoria, recomendacoes_praticas e riscos_principais deve ter titulo (obrigatório), descricao (obrigatório), evidencias (opcional), prioridade (opcional: "ALTA", "MEDIA", "BAIXA").
+Forneça de 3 a 5 pontos fortes, 2 a 4 oportunidades de melhoria, 2 a 4 recomendações práticas.
+Seja específico ao projeto analisado. Evite genéricos."""
 
     return system_prompt, user_prompt
 
@@ -227,6 +247,7 @@ def calculate_criteria_hash() -> str:
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
-PROMPT_VERSION = "checkpoint_v1"
+PROMPT_VERSION = "checkpoint_v2"
 CRITERIA_VERSION = "business_rules_2026_07"
 EVALUATION_ENGINE = "farol-engine-v1"
+OUTPUT_SCHEMA_VERSION = "feedback_v1"

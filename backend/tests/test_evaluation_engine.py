@@ -7,8 +7,10 @@ from app.schemas.avaliacao import (
     CriterioAvaliacao,
     CriteriosAlinhamento,
     CriteriosPotencial,
+    FeedbackItem,
 )
 from app.services.evaluation_engine import EvaluationEngine
+from app.services.feedback_builder import FeedbackBuilder
 
 
 def _criterio_valido(nota: float = 100, feedback: str = "Ok", confianca: float | None = 90) -> CriterioAvaliacao:
@@ -39,6 +41,11 @@ def _potencial_todos(nota: float) -> CriteriosPotencial:
     )
 
 
+def _feedback_item(titulo="Item", descricao="Descricao"):
+    from app.schemas.avaliacao import FeedbackItem
+    return FeedbackItem(titulo=titulo, descricao=descricao)
+
+
 def _output_base(
     alinhamento: CriteriosAlinhamento | None = None,
     potencial: CriteriosPotencial | None = None,
@@ -48,6 +55,11 @@ def _output_base(
         criterios_potencial=potencial or _potencial_todos(100),
         feedback_geral="Feedback geral",
         resumo_para_marketing="Resumo marketing",
+        pontos_fortes=[_feedback_item("Pf1", "Ponto forte 1")],
+        oportunidades_melhoria=[_feedback_item("Op1", "Oportunidade 1")],
+        recomendacoes_praticas=[_feedback_item("Re1", "Recomendacao 1")],
+        proximos_passos=["Proximo passo"],
+        riscos_principais=[_feedback_item("Ri1", "Risco 1")],
     )
 
 
@@ -199,6 +211,11 @@ class TestEvaluationEngine:
         assert hasattr(result, "resumo_para_marketing")
         assert hasattr(result, "contribuicoes_alinhamento")
         assert hasattr(result, "contribuicoes_potencial")
+        assert hasattr(result, "pontos_fortes")
+        assert hasattr(result, "oportunidades_melhoria")
+        assert hasattr(result, "recomendacoes_praticas")
+        assert hasattr(result, "proximos_passos")
+        assert hasattr(result, "riscos_principais")
 
 
 class TestSchemas:
@@ -267,3 +284,75 @@ class TestSchemas:
             "viabilidade_operacional",
         }
         assert set(EvaluationEngine.PESOS_POTENCIAL.keys()) == expected
+
+
+class TestFeedbackBuilder:
+    def _make_calculada(self, score_a=80, score_p=80) -> AvaliacaoCalculada:
+        output = _output_base(_alinhamento_todos(score_a), _potencial_todos(score_p))
+        return EvaluationEngine.evaluate(output)
+
+    def test_justificativa_prioridade_maxima(self):
+        calculada = self._make_calculada(80, 80)
+        just = FeedbackBuilder.gerar_justificativa(calculada)
+        assert "PRIORIDADE MÁXIMA" in just
+        assert "80" in just
+
+    def test_justificativa_vale_investir_tempo(self):
+        calculada = self._make_calculada(65, 70)
+        just = FeedbackBuilder.gerar_justificativa(calculada)
+        assert "VALE INVESTIR TEMPO" in just
+
+    def test_justificativa_baixa_prioridade(self):
+        calculada = self._make_calculada(80, 50)
+        just = FeedbackBuilder.gerar_justificativa(calculada)
+        assert "BAIXA PRIORIDADE" in just
+
+    def test_justificativa_nao_contradiz_classificacao(self):
+        for score_a, score_p, esperada in [
+            (80, 80, "PRIORIDADE MAXIMA"),
+            (65, 70, "VALE INVESTIR TEMPO"),
+            (80, 50, "BAIXA PRIORIDADE"),
+        ]:
+            calculada = self._make_calculada(score_a, score_p)
+            just = FeedbackBuilder.gerar_justificativa(calculada)
+            assert esperada.split(" ")[0] in just.upper()
+
+    def test_justificativa_inclui_contribuicoes_positivas(self):
+        calculada = self._make_calculada(80, 80)
+        just = FeedbackBuilder.gerar_justificativa(calculada)
+        assert "tom_de_voz_azul" in just or "pilares_estrategicos_atuais" in just
+
+    def test_justificativa_inclui_contribuicoes_negativas(self):
+        calculada = self._make_calculada(80, 80)
+        just = FeedbackBuilder.gerar_justificativa(calculada)
+        assert "clareza_passageiro" in just or "viabilidade_operacional" in just
+
+    def test_montar_feedback_json_inclui_schema_version(self):
+        calculada = self._make_calculada(80, 80)
+        fb = FeedbackBuilder.montar_feedback_json(
+            calculada,
+            pontos_fortes=[FeedbackItem(titulo="Pf", descricao="Ponto forte")],
+            oportunidades_melhoria=[FeedbackItem(titulo="Op", descricao="Oportunidade")],
+            recomendacoes_praticas=[FeedbackItem(titulo="Re", descricao="Recomendacao")],
+        )
+        assert fb["schema_version"] == "feedback_v1"
+        assert len(fb["pontos_fortes"]) == 1
+        assert len(fb["oportunidades_melhoria"]) == 1
+        assert len(fb["recomendacoes_praticas"]) == 1
+        assert fb["justificativa_classificacao"] != ""
+
+    def test_montar_feedback_json_defaults_empty_lists(self):
+        calculada = self._make_calculada(80, 80)
+        fb = FeedbackBuilder.montar_feedback_json(calculada)
+        assert fb["pontos_fortes"] == []
+        assert fb["oportunidades_melhoria"] == []
+        assert fb["recomendacoes_praticas"] == []
+        assert fb["proximos_passos"] == []
+        assert fb["riscos_principais"] == []
+
+    def test_evaluation_engine_does_not_generate_text(self):
+        output = _output_base()
+        calculada = EvaluationEngine.evaluate(output)
+        # Engine should not have a gerar_justificativa method
+        assert not hasattr(EvaluationEngine, "gerar_justificativa")
+        assert not hasattr(EvaluationEngine, "montar_feedback_json")

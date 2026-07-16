@@ -1,7 +1,7 @@
+from typing import Any, Optional
 from uuid import UUID
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 from app.schemas.avaliacao import (
     AvaliacaoCalculada,
@@ -10,6 +10,7 @@ from app.schemas.avaliacao import (
     CriterioAvaliacao,
     CriteriosAlinhamento,
     CriteriosPotencial,
+    FeedbackEstruturado,
 )
 
 
@@ -45,6 +46,20 @@ class AvaliacaoCheckpointResponse(BaseModel):
     created_at: datetime
     contribuicoes_alinhamento: list[ContribuicaoCriterio] = Field(default_factory=list)
     contribuicoes_potencial: list[ContribuicaoCriterio] = Field(default_factory=list)
+    feedback: Optional[FeedbackEstruturado] = Field(default=None, alias="feedback_json")
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse_feedback_json(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            raw = data.get("feedback_json")
+            if raw is not None and isinstance(raw, dict):
+                data["feedback"] = raw
+        else:
+            raw = getattr(data, "feedback_json", None)
+            if raw is not None and isinstance(raw, dict):
+                object.__setattr__(data, "feedback", raw)
+        return data
 
 
 class AvaliacaoHistoryResponse(BaseModel):
