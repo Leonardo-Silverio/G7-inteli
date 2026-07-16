@@ -2,6 +2,7 @@ import pytest
 from uuid import uuid4
 from datetime import datetime
 
+from app.config.settings import settings
 from app.ai.provider import FakeAIProvider, AIProviderError, AIInvalidResponseError, AIResponseValidationError
 from app.ai.checkpoint_evaluator import CheckpointAIEvaluator
 from app.ai.checkpoint_prompt import CheckpointEvaluationContext
@@ -59,7 +60,7 @@ def _make_context(tipo: TipoCheckpoint = TipoCheckpoint.IDEACAO) -> CheckpointEv
 class TestCheckpointAIEvaluator:
     def test_valid_response_returns_avaliacao_ia_output(self):
         provider = FakeAIProvider(response=_valid_ia_output())
-        evaluator = CheckpointAIEvaluator(provider, modelo="gpt-4o-mini")
+        evaluator = CheckpointAIEvaluator(provider, modelo=settings.DEEPSEEK_MODEL)
 
         avaliacao, metadata = evaluator.evaluate(_make_context())
 
@@ -196,7 +197,7 @@ class TestCheckpointAIEvaluator:
 
         assert isinstance(avaliacao, AvaliacaoIAOutput)
         assert metadata.evaluation_engine == "farol-engine-v1"
-        assert metadata.modelo == "gpt-4o-mini"
+        assert metadata.modelo == settings.DEEPSEEK_MODEL
         assert metadata.prompt_version == "checkpoint_v1"
         assert metadata.criteria_version == "business_rules_2026_07"
         assert len(metadata.prompt_hash) == 64
@@ -204,9 +205,9 @@ class TestCheckpointAIEvaluator:
 
     def test_all_three_checkpoint_types_work(self):
         provider = FakeAIProvider(response=_valid_ia_output())
-        evaluator = CheckpointAIEvaluator(provider)
+        evaluator = CheckpointAIEvaluator(provider, modelo=settings.DEEPSEEK_MODEL)
 
         for tipo in [TipoCheckpoint.IDEACAO, TipoCheckpoint.DESENVOLVIMENTO, TipoCheckpoint.PRE_LANCAMENTO]:
             avaliacao, metadata = evaluator.evaluate(_make_context(tipo))
             assert isinstance(avaliacao, AvaliacaoIAOutput)
-            assert metadata.modelo == "gpt-4o-mini"
+            assert metadata.modelo == settings.DEEPSEEK_MODEL

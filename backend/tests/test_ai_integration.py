@@ -10,6 +10,7 @@ from app.models.usuario import Usuario
 from app.models.vertical import Vertical
 from app.services.checkpoint_service import CheckpointService
 from app.services.avaliacao_service import AvaliacaoService
+from app.config.settings import settings
 from app.ai.provider import FakeAIProvider
 from app.ai.checkpoint_evaluator import CheckpointAIEvaluator
 from app.repositories.checkpoint_repository import CheckpointRepository
@@ -161,7 +162,7 @@ class TestAIEvaluationIntegration:
         
         # Verify D9 metadata
         assert avaliacao.evaluation_engine == "farol-engine-v1"
-        assert avaliacao.modelo == "gpt-4o-mini"
+        assert avaliacao.modelo == settings.DEEPSEEK_MODEL
         assert avaliacao.prompt_version == "checkpoint_v1"
         assert avaliacao.criteria_version == "business_rules_2026_07"
         assert avaliacao.prompt_hash is not None
@@ -600,7 +601,7 @@ class TestAIEvaluationIntegration:
         
         # Verify all D9 metadata
         assert avaliacao.evaluation_engine == "farol-engine-v1"
-        assert avaliacao.modelo == "gpt-4o-mini"
+        assert avaliacao.modelo == settings.DEEPSEEK_MODEL
         assert avaliacao.prompt_version == "checkpoint_v1"
         assert avaliacao.criteria_version == "business_rules_2026_07"
         assert avaliacao.prompt_hash is not None

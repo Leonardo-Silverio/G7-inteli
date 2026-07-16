@@ -1,3 +1,4 @@
+import json
 from typing import Any, Protocol
 from dataclasses import dataclass
 from app.config.settings import settings
@@ -28,17 +29,18 @@ class AIResponseValidationError(AIProviderError):
 @dataclass
 class ProviderConfig:
     api_key: str | None = None
-    model: str = "gpt-4o-mini"
+    model: str = "deepseek-v4-flash"
     temperature: float = 0.1
     max_tokens: int = 4000
-    timeout: int = 60
+    timeout: int = 30
 
 
-class OpenAIProvider:
+class DeepSeekProvider:
     def __init__(self, config: ProviderConfig | None = None):
         self.config = config or ProviderConfig(
-            api_key=getattr(settings, "OPENAI_API_KEY", None),
-            model="gpt-4o-mini",
+            api_key=settings.DEEPSEEK_API_KEY,
+            model=settings.DEEPSEEK_MODEL,
+            timeout=30,
         )
         self._client = None
 
@@ -46,10 +48,11 @@ class OpenAIProvider:
     def client(self):
         if self._client is None:
             if not self.config.api_key:
-                raise AIProviderError("API key não configurada")
+                raise AIProviderError("API key DeepSeek não configurada")
             from openai import OpenAI
             self._client = OpenAI(
                 api_key=self.config.api_key,
+                base_url="https://api.deepseek.com/v1",
                 timeout=self.config.timeout,
             )
         return self._client
@@ -69,17 +72,30 @@ class OpenAIProvider:
                 ],
                 temperature=self.config.temperature,
                 max_tokens=self.config.max_tokens,
-                response_format={"type": "json_object"},
+                stream=False,
             )
             content = response.choices[0].message.content
             if not content:
                 raise AIInvalidResponseError("Resposta vazia da IA")
-            import json
-            return json.loads(content)
+            return self._parse_json(content)
         except AIProviderError:
             raise
         except Exception as e:
-            raise AIProviderError(f"Erro ao chamar provedor de IA: {type(e).__name__}")
+            raise AIProviderError(f"Erro ao chamar DeepSeek: {type(e).__name__}")
+
+    def _parse_json(self, content: str) -> dict[str, Any]:
+        content = content.strip()
+        if content.startswith("```"):
+            first_newline = content.find("\n")
+            if first_newline != -1:
+                content = content[first_newline:].strip()
+            if content.endswith("```"):
+                content = content[:-3].strip()
+            content = content.strip()
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            raise AIInvalidResponseError("Resposta da IA não é um JSON válido")
 
 
 class FakeAIProvider:
@@ -100,3 +116,9 @@ class FakeAIProvider:
         if self._should_fail:
             raise AIProviderError("Erro simulado do provedor")
         return self._response
+
+
+def get_ai_provider() -> AIProvider:
+    if settings.DEEPSEEK_API_KEY:
+        return DeepSeekProvider()
+    return FakeAIProvider()

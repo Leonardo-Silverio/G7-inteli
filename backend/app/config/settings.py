@@ -15,8 +15,8 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
 
-    OPENAI_API_KEY: str | None = None
-    OPENAI_MODEL: str = "gpt-4o-mini"
+    DEEPSEEK_API_KEY: str | None = None
+    DEEPSEEK_MODEL: str = "deepseek-v4-flash"
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod

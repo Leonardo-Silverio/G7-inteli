@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
+from app.config.settings import settings
 from app.ai.provider import AIProvider, AIProviderError, AIInvalidResponseError, AIResponseValidationError
 from app.ai.checkpoint_prompt import (
     build_prompt,
@@ -30,10 +31,11 @@ class CheckpointAIEvaluator:
         self,
         provider: AIProvider,
         *,
-        modelo: str = "gpt-4o-mini",
+        modelo: str | None = None,
         prompt_version: str = PROMPT_VERSION,
         criteria_version: str = CRITERIA_VERSION,
     ):
+        modelo = modelo or settings.DEEPSEEK_MODEL
         self.provider = provider
         self.modelo = modelo
         self.prompt_version = prompt_version

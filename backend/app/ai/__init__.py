@@ -3,8 +3,9 @@ from app.ai.provider import (
     AIProviderError,
     AIInvalidResponseError,
     AIResponseValidationError,
-    OpenAIProvider,
+    DeepSeekProvider,
     FakeAIProvider,
+    get_ai_provider,
 )
 from app.ai.checkpoint_prompt import (
     build_prompt,
@@ -25,8 +26,9 @@ __all__ = [
     "AIProviderError",
     "AIInvalidResponseError",
     "AIResponseValidationError",
-    "OpenAIProvider",
+    "DeepSeekProvider",
     "FakeAIProvider",
+    "get_ai_provider",
     "build_prompt",
     "calculate_prompt_hash",
     "calculate_criteria_hash",
