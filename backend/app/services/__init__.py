@@ -1,4 +1,9 @@
 from app.services.auth_service import AuthService
+from app.services.avaliacao_service import (
+    AvaliacaoService,
+    CheckpointNotFoundError,
+)
+from app.services.evaluation_engine import EvaluationEngine
 from app.services.projeto_service import (
     ProjetoService,
     ProjetoNotFoundError,
@@ -8,7 +13,6 @@ from app.services.projeto_service import (
 )
 from app.services.checkpoint_service import (
     CheckpointService,
-    CheckpointNotFoundError,
     CheckpointAlreadyExistsError,
     CheckpointOrderError,
     CheckpointAuthorizationError,
@@ -20,6 +24,8 @@ from app.services.checkpoint_service import (
 
 __all__ = [
     "AuthService",
+    "EvaluationEngine",
+    "AvaliacaoService",
     "ProjetoService",
     "CheckpointService",
     "ProjetoNotFoundError",

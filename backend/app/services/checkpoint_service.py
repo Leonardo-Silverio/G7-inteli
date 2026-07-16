@@ -1,6 +1,7 @@
 from uuid import UUID
 from datetime import datetime, timezone
 from pydantic import ValidationError
+import logging
 
 from app.models.enums import PapelUsuario, StatusCheckpoint, TipoCheckpoint
 from app.models.checkpoint import Checkpoint
@@ -18,6 +19,12 @@ from app.schemas.checkpoint import (
     AnexoListResponse,
 )
 from app.schemas.user import CurrentUser
+from app.services.avaliacao_service import AvaliacaoService, CheckpointNotFoundError as AvaliacaoCheckpointNotFoundError
+from app.ai.checkpoint_evaluator import CheckpointAIEvaluator
+from app.ai.provider import FakeAIProvider
+from app.ai.checkpoint_prompt import CheckpointEvaluationContext
+
+logger = logging.getLogger(__name__)
 
 
 class CheckpointNotFoundError(ValueError):
@@ -83,9 +90,13 @@ class CheckpointService:
         self,
         checkpoint_repo: CheckpointRepository,
         projeto_repo: ProjetoRepository,
+        avaliacao_service: AvaliacaoService | None = None,
+        ai_evaluator: CheckpointAIEvaluator | None = None,
     ):
         self.checkpoint_repo = checkpoint_repo
         self.projeto_repo = projeto_repo
+        self.avaliacao_service = avaliacao_service
+        self.ai_evaluator = ai_evaluator
 
     def list_checkpoints(
         self,
@@ -301,11 +312,90 @@ class CheckpointService:
         }
         self.checkpoint_repo.update_checkpoint(checkpoint, updates)
 
+        # Trigger AI evaluation asynchronously (post-process)
+        # IA falha não deve impedir a conclusão do checkpoint
+        self._trigger_ai_evaluation(checkpoint, projeto_id, tipo, respostas, current_user)
+
         proxima_etapa = self._get_proxima_etapa(tipo)
         return CheckpointSubmitResponse(
             checkpoint=CheckpointResponse.model_validate(checkpoint),
             enviado_em=now,
             proxima_etapa=proxima_etapa,
+        )
+
+    def _trigger_ai_evaluation(
+        self,
+        checkpoint: Checkpoint,
+        projeto_id: UUID,
+        tipo: TipoCheckpoint,
+        respostas: dict,
+        current_user: CurrentUser,
+    ) -> None:
+        """Trigger AI evaluation as post-process. Failure does not affect checkpoint completion."""
+        if not self.avaliacao_service or not self.ai_evaluator:
+            logger.info("AI evaluation not configured, skipping")
+            return
+
+        try:
+            # Build evaluation context
+            context = self._build_evaluation_context(
+                checkpoint=checkpoint,
+                projeto_id=projeto_id,
+                tipo=tipo,
+                respostas=respostas,
+            )
+
+            # Call AI evaluator
+            ia_output, metadata = self.ai_evaluator.evaluate(context)
+
+            # Evaluate with engine and persist
+            self.avaliacao_service.create_evaluation(
+                checkpoint_id=checkpoint.id,
+                ia_output=ia_output,
+                modelo=metadata.modelo,
+                prompt_version=metadata.prompt_version,
+                criteria_version=metadata.criteria_version,
+                prompt_hash=metadata.prompt_hash,
+                criteria_hash=metadata.criteria_hash,
+            )
+
+            logger.info(f"AI evaluation completed for checkpoint {checkpoint.id}")
+
+        except Exception as e:
+            # Log error but don't fail the checkpoint
+            logger.warning(f"AI evaluation failed for checkpoint {checkpoint.id}: {type(e).__name__}: {e}")
+
+    def _build_evaluation_context(
+        self,
+        checkpoint: Checkpoint,
+        projeto_id: UUID,
+        tipo: TipoCheckpoint,
+        respostas: dict,
+    ) -> CheckpointEvaluationContext:
+        """Build evaluation context from checkpoint data."""
+        # Extract form version info from respostas_formulario if available
+        form_data = checkpoint.respostas_formulario or {}
+        versao_formulario = form_data.get("versao_formulario", f"{tipo.value.lower()}_v1")
+        versao_business = form_data.get("versao_business", "2026-07")
+        schema_version = form_data.get("schema_version", 1)
+
+        # Extract attachments metadata
+        anexos = form_data.get("anexos", [])
+
+        # Previous evaluations (if any) - could be extended later
+        avaliacoes_anteriores = []
+
+        return CheckpointEvaluationContext(
+            checkpoint_id=checkpoint.id,
+            projeto_id=projeto_id,
+            tipo_checkpoint=tipo,
+            versao_formulario=versao_formulario,
+            versao_business=versao_business,
+            schema_version=schema_version,
+            respostas=respostas,
+            anexos=anexos,
+            avaliacoes_anteriores=avaliacoes_anteriores,
+            conversa_resumida=None,  # Could be extended later
         )
 
     def _validate_formulario(self, tipo: TipoCheckpoint, respostas: dict) -> None:

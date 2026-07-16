@@ -11,6 +11,21 @@ from app.schemas.projeto import (
     MensagemListResponse,
     ConversaResponse,
 )
+from app.schemas.avaliacao import (
+    AvaliacaoCalculada,
+    AvaliacaoIAOutput,
+    CriterioAvaliacao,
+    CriteriosAlinhamento,
+    CriteriosPotencial,
+    ClassificacaoFarol,
+    ContribuicaoCriterio,
+)
+from app.schemas.avaliacao_response import (
+    AvaliacaoCheckpointResponse,
+    AvaliacaoHistoryResponse,
+    AvaliacaoLatestResponse,
+    AvaliacaoCreateMetadata,
+)
 from app.schemas.checkpoint import (
     CheckpointResponse,
     CheckpointListResponse,
@@ -57,6 +72,17 @@ __all__ = [
     "MensagemResponse",
     "MensagemListResponse",
     "ConversaResponse",
+    "CriterioAvaliacao",
+    "CriteriosAlinhamento",
+    "CriteriosPotencial",
+    "AvaliacaoIAOutput",
+    "AvaliacaoCalculada",
+    "ClassificacaoFarol",
+    "ContribuicaoCriterio",
+    "AvaliacaoCheckpointResponse",
+    "AvaliacaoHistoryResponse",
+    "AvaliacaoLatestResponse",
+    "AvaliacaoCreateMetadata",
     "CheckpointResponse",
     "CheckpointListResponse",
     "CheckpointIniciarRequest",

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
+import sqlalchemy as sa
 from sqlalchemy import JSON, CheckConstraint, DateTime, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -49,8 +50,10 @@ class Checkpoint(UUIDIdMixin, TimestampMixin, Base):
     resumo_para_marketing: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     projeto: Mapped[Projeto] = relationship(back_populates="checkpoints")
-    avaliacao: Mapped[AvaliacaoCheckpoint | None] = relationship(
-        back_populates="checkpoint", uselist=False,
+    avaliacoes: Mapped[list[AvaliacaoCheckpoint]] = relationship(
+        back_populates="checkpoint",
+        lazy="select",
+        order_by="AvaliacaoCheckpoint.evaluated_at.desc()",
     )
     anexos: Mapped[list[AnexoCheckpoint]] = relationship(
         back_populates="checkpoint",
@@ -73,7 +76,6 @@ class AvaliacaoCheckpoint(UUIDIdMixin, TimestampMixin, Base):
 
     checkpoint_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("checkpoints.id", name="fk_avaliacao_checkpoint"),
-        unique=True,
         nullable=False,
     )
     score_alinhamento: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -85,5 +87,21 @@ class AvaliacaoCheckpoint(UUIDIdMixin, TimestampMixin, Base):
     criterios_alinhamento: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     criterios_potencial: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     explicacoes: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    feedback_geral: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resumo_para_marketing: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    checkpoint: Mapped[Checkpoint] = relationship(back_populates="avaliacao")
+    evaluation_engine: Mapped[str] = mapped_column(
+        sa.String(100), nullable=False, default="farol-engine-v1"
+    )
+    modelo: Mapped[str] = mapped_column(sa.String(100), nullable=False, default="unknown")
+    prompt_version: Mapped[str] = mapped_column(sa.String(100), nullable=False, default="unknown")
+    criteria_version: Mapped[str] = mapped_column(sa.String(100), nullable=False, default="unknown")
+    prompt_hash: Mapped[str] = mapped_column(sa.String(64), nullable=False, default="")
+    criteria_hash: Mapped[str] = mapped_column(sa.String(64), nullable=False, default="")
+    evaluated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    checkpoint: Mapped[Checkpoint] = relationship(back_populates="avaliacoes")

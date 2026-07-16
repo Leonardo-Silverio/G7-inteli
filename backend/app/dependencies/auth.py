@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -10,9 +10,11 @@ from app.models.enums import PapelUsuario
 from app.repositories.user_repository import UserRepository
 from app.repositories.projeto_repository import ProjetoRepository
 from app.repositories.checkpoint_repository import CheckpointRepository
+from app.repositories.avaliacao_repository import AvaliacaoRepository
 from app.services.auth_service import AuthService
 from app.services.projeto_service import ProjetoService
 from app.services.checkpoint_service import CheckpointService
+from app.services.avaliacao_service import AvaliacaoService
 from app.schemas.user import CurrentUser
 
 security = HTTPBearer(auto_error=False)
@@ -38,13 +40,47 @@ def get_checkpoint_repository(db=Depends(get_db)) -> CheckpointRepository:
     return CheckpointRepository(db)
 
 
+def get_avaliacao_repository(db=Depends(get_db)) -> AvaliacaoRepository:
+    return AvaliacaoRepository(db)
+
+
+def get_avaliacao_service(
+    avaliacao_repo: AvaliacaoRepository = Depends(get_avaliacao_repository),
+    checkpoint_repo: CheckpointRepository = Depends(get_checkpoint_repository),
+) -> AvaliacaoService:
+    return AvaliacaoService(avaliacao_repo, checkpoint_repo)
+
+
 def get_checkpoint_service(
     checkpoint_repo: CheckpointRepository = Depends(get_checkpoint_repository),
     projeto_repo: ProjetoRepository = Depends(get_projeto_repo),
 ) -> CheckpointService:
+    """Get CheckpointService with optional AI integration if available."""
+    # Try to inject AI services if available
+    avaliacao_service = None
+    ai_evaluator = None
+    
+    try:
+        from app.services.avaliacao_service import AvaliacaoService
+        from app.repositories.avaliacao_repository import AvaliacaoRepository
+        from app.ai.checkpoint_evaluator import CheckpointAIEvaluator
+        from app.ai.provider import get_ai_provider
+        
+        db = checkpoint_repo.db
+        avaliacao_repo = AvaliacaoRepository(db)
+        avaliacao_service = AvaliacaoService(avaliacao_repo, checkpoint_repo)
+        
+        provider = get_ai_provider()
+        ai_evaluator = CheckpointAIEvaluator(provider)
+    except Exception:
+        # If AI services are not available, continue without them
+        pass
+    
     return CheckpointService(
         checkpoint_repo=checkpoint_repo,
         projeto_repo=projeto_repo,
+        avaliacao_service=avaliacao_service,
+        ai_evaluator=ai_evaluator,
     )
 
 
