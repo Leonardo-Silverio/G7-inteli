@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import JSON, CheckConstraint, DateTime, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy import Enum as SQLEnum
@@ -10,6 +11,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.database import Base
 from app.models.enums import ClassificacaoFarol, StatusCheckpoint, TipoCheckpoint
 from app.models.mixins import TimestampMixin, UUIDIdMixin
+
+if TYPE_CHECKING:
+    from app.models.anexo_checkpoint import AnexoCheckpoint
+    from app.models.projeto import Projeto
 
 
 class Checkpoint(UUIDIdMixin, TimestampMixin, Base):
@@ -46,6 +51,10 @@ class Checkpoint(UUIDIdMixin, TimestampMixin, Base):
     projeto: Mapped[Projeto] = relationship(back_populates="checkpoints")
     avaliacao: Mapped[AvaliacaoCheckpoint | None] = relationship(
         back_populates="checkpoint", uselist=False,
+    )
+    anexos: Mapped[list[AnexoCheckpoint]] = relationship(
+        back_populates="checkpoint",
+        cascade="all, delete-orphan",
     )
 
 

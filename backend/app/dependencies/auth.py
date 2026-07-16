@@ -9,8 +9,10 @@ from app.database.database import get_db
 from app.models.enums import PapelUsuario
 from app.repositories.user_repository import UserRepository
 from app.repositories.projeto_repository import ProjetoRepository
+from app.repositories.checkpoint_repository import CheckpointRepository
 from app.services.auth_service import AuthService
 from app.services.projeto_service import ProjetoService
+from app.services.checkpoint_service import CheckpointService
 from app.schemas.user import CurrentUser
 
 security = HTTPBearer(auto_error=False)
@@ -30,6 +32,20 @@ def get_auth_service(user_repo=Depends(get_user_repo)) -> AuthService:
 
 def get_projeto_service(repo=Depends(get_projeto_repo)) -> ProjetoService:
     return ProjetoService(repo)
+
+
+def get_checkpoint_repository(db=Depends(get_db)) -> CheckpointRepository:
+    return CheckpointRepository(db)
+
+
+def get_checkpoint_service(
+    checkpoint_repo: CheckpointRepository = Depends(get_checkpoint_repository),
+    projeto_repo: ProjetoRepository = Depends(get_projeto_repo),
+) -> CheckpointService:
+    return CheckpointService(
+        checkpoint_repo=checkpoint_repo,
+        projeto_repo=projeto_repo,
+    )
 
 
 async def get_current_user(

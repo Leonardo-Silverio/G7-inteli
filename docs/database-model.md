@@ -147,7 +147,35 @@ Armazena o resultado da avaliação de um checkpoint.
 
 ---
 
-### 6. Alerta
+### 6. Anexo de Checkpoint
+
+Armazena metadados de arquivos anexados a checkpoints (não armazena o binário).
+
+| Campo | Tipo | Restrições |
+|---|---|---|
+| id | UUID | PK |
+| checkpoint_id | UUID | FK → Checkpoint, not null |
+| nome_original | string(255) | not null |
+| mime_type | string(100) | not null |
+| tamanho_bytes | bigint | not null |
+| storage_key | string(500) | not null, unique |
+| enviado_por_id | UUID | FK → Usuário, not null |
+| created_at | datetime(tz) | not null |
+
+**Constraints**
+- `storage_key` é unique: chave física não se repete
+- `(checkpoint_id, storage_key)` é unique: evita duplicatas por checkpoint
+- `tamanho_bytes >= 0` (CHECK)
+- FK `checkpoint_id` → `checkpoints.id` com ON DELETE CASCADE
+- FK `enviado_por_id` → `usuarios.id` com ON DELETE RESTRICT (preserva auditoria)
+
+**Índices**
+- `checkpoint_id`
+- `enviado_por_id`
+
+---
+
+### 7. Alerta
 
 Registra alertas gerados durante a avaliação dos checkpoints.
 
