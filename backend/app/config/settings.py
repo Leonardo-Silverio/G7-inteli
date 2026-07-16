@@ -7,7 +7,8 @@ class Settings(BaseSettings):
     VERSION: str = "0.1.0"
     DEBUG: bool = False
 
-    DATABASE_URL: str = "postgresql+psycopg://farol:farol@localhost:5432/farol"
+    # PoC / simulação: SQLite por padrão (zero setup). Troque via DATABASE_URL no .env.
+    DATABASE_URL: str = "sqlite:///./farol.db"
 
     SECRET_KEY: str = "change-me"
     ALGORITHM: str = "HS256"

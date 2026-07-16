@@ -39,9 +39,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Docker
-postgres-data/
-docker-compose.override.yml
+# SQLite (PoC / simulação)
+*.db
+*.sqlite
+*.sqlite3
 
 # Environment
 .env

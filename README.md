@@ -9,7 +9,7 @@ Plataforma web moderna construída com Python FastAPI no backend e React com Typ
 - **FastAPI** — framework web assíncrono
 - **SQLAlchemy 2.0** — ORM para banco de dados
 - **Alembic** — migrações de banco de dados
-- **PostgreSQL** — banco de dados relacional
+- **SQLite** — banco de dados padrão (PoC/simulação, zero setup); PostgreSQL opcional
 - **Pydantic v2** — validação de dados
 - **JWT** — estrutura preparada para autenticação futura
 
@@ -39,7 +39,6 @@ farol/
 │   ├── tests/             # Testes automatizados
 │   ├── alembic/           # Migrações de banco de dados
 │   ├── alembic.ini        # Configuração do Alembic
-│   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── requirements-dev.txt
 │   └── .env.example
@@ -51,14 +50,11 @@ farol/
 │   │   ├── App.tsx        # Componente raiz com rotas
 │   │   ├── global.css     # Estilos globais (Tailwind)
 │   │   └── main.tsx       # Ponto de entrada React
-│   ├── nginx/             # Configuração de proxy reverso
-│   ├── Dockerfile
 │   ├── package.json
 │   ├── vite.config.ts
 │   ├── tailwind.config.js
 │   ├── tsconfig.json
 │   └── .env.example
-├── docker-compose.yml
 ├── .gitignore
 └── README.md
 ```
@@ -66,10 +62,10 @@ farol/
 ## Como instalar
 
 ### Pré-requisitos
-- Python 3.13
+- Python 3.13 (funciona em 3.12+)
 - Node.js 22+
-- PostgreSQL 16+
-- (Opcional) Docker e Docker Compose
+
+> Esta é uma PoC/simulação: o backend usa **SQLite** por padrão, sem banco externo.
 
 ### Backend
 
@@ -78,8 +74,8 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
-# edite o .env com suas configurações
+cp .env.example .env       # já vem com SQLite configurado
+alembic upgrade head       # cria as tabelas (passo obrigatório)
 uvicorn app.main:app --reload
 ```
 
@@ -94,7 +90,7 @@ npm run dev
 
 ## Como executar
 
-Inicie o PostgreSQL e configure o banco de dados `farol`.
+O banco padrão é SQLite, então não é preciso subir nenhum serviço externo. Garanta que as tabelas foram criadas com `alembic upgrade head` (veja acima).
 
 ### Backend (desenvolvimento)
 
@@ -103,7 +99,7 @@ cd backend
 uvicorn app.main:app --reload
 ```
 
-A API estará disponível em `http://localhost:8000`.
+A API estará disponível em `http://localhost:8000` (docs em `http://localhost:8000/docs`).
 
 ### Frontend (desenvolvimento)
 
@@ -113,20 +109,6 @@ npm run dev
 ```
 
 O frontend estará disponível em `http://localhost:5173`.
-
-## Como rodar usando Docker
-
-```bash
-docker compose up --build
-```
-
-Isso iniciará:
-
-- **PostgreSQL** na porta `5432`
-- **Backend** na porta `8000`
-- **Frontend** na porta `8080`
-
-Acesse `http://localhost:8080` para ver a aplicação.
 
 ## Entidades do Domínio (Sprint 2)
 
