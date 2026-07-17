@@ -6,22 +6,160 @@ Plataforma web moderna construída com Python FastAPI no backend e React com Typ
 > qualquer serviço externo. Os projetos e a avaliação são fictícios e previsíveis,
 > próprios para uma apresentação.
 
-## Rodar no GitHub Codespaces (recomendado)
+## Início rápido
 
-1. No GitHub, clique em **Code → Codespaces → Create codespace on main**.
-2. Aguarde a mensagem de conclusão da configuração no terminal.
-3. Execute:
+Depois de instalar as dependências, um único comando inicia o backend e o frontend:
 
 ```bash
 ./start-demo.sh
 ```
 
-O Codespaces abrirá a aplicação automaticamente. Se não abrir, acesse a aba
-**Ports** e clique no endereço da porta **5173 (Farol)**. A porta já está configurada
-como pública para facilitar o compartilhamento durante a apresentação.
+Abra <http://localhost:5173>. Para encerrar os dois serviços, pressione `Ctrl+C` no
+mesmo terminal.
 
-Para encerrar, pressione `Ctrl+C` no terminal. Não é necessário criar `.env`, rodar
-migrações ou cadastrar usuários para esta demonstração.
+| Serviço | Endereço |
+|---|---|
+| Aplicação | <http://localhost:5173> |
+| API | <http://localhost:8000> |
+| Documentação interativa da API | <http://localhost:8000/docs> |
+| Verificação de saúde | <http://localhost:8000/api/health> |
+
+## Rodar localmente
+
+### Pré-requisitos
+
+- Git;
+- Python 3.12 ou mais recente;
+- Node.js 22 e npm;
+- Linux, macOS, WSL ou Git Bash no Windows para usar `start-demo.sh`.
+
+Confira as versões disponíveis:
+
+```bash
+python3 --version
+node --version
+npm --version
+```
+
+No Windows, `python` pode ser usado no lugar de `python3`.
+
+### 1. Clonar o repositório
+
+```bash
+git clone https://github.com/Leonardo-Silverio/G7-inteli.git
+cd G7-inteli
+```
+
+### 2. Instalar o backend
+
+Linux, macOS ou WSL:
+
+```bash
+python3 -m venv backend/.venv
+source backend/.venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r backend/requirements.txt
+deactivate
+```
+
+Windows PowerShell:
+
+```powershell
+py -3 -m venv backend/.venv
+backend\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r backend/requirements.txt
+deactivate
+```
+
+### 3. Instalar o frontend
+
+Na raiz do repositório:
+
+```bash
+npm ci --prefix frontend
+```
+
+### 4. Iniciar a demonstração
+
+Linux, macOS, WSL ou Git Bash:
+
+```bash
+chmod +x start-demo.sh
+./start-demo.sh
+```
+
+O script encontra automaticamente `backend/.venv/bin/python`, `python` ou
+`python3`, inicia a API na porta 8000 e o Vite na porta 5173.
+
+### Alternativa: iniciar os serviços manualmente
+
+Use dois terminais. No primeiro, execute o backend:
+
+```bash
+cd backend
+.venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+No PowerShell, substitua `.venv/bin/python` por `.venv\Scripts\python.exe`.
+
+No segundo terminal, execute o frontend:
+
+```bash
+cd frontend
+npm run dev -- --host 0.0.0.0
+```
+
+## Rodar no GitHub Codespaces (recomendado)
+
+O repositório possui [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json),
+que instala automaticamente Python 3.13, Node.js 22, as dependências do backend e
+as dependências do frontend.
+
+1. No GitHub, clique em **Code → Codespaces → Create codespace on main**.
+2. Aguarde o terminal concluir o comando `postCreateCommand`. Na primeira abertura,
+   essa instalação pode levar alguns minutos.
+3. No terminal do Codespaces, execute:
+
+```bash
+./start-demo.sh
+```
+
+4. O Codespaces deverá abrir a aplicação automaticamente. Se isso não acontecer,
+   abra a aba **Ports** e clique no endereço da porta **5173 (Farol)**.
+
+As portas 5173 e 8000 já são encaminhadas pelo Codespaces. A porta 5173 está marcada
+como pública no dev container para permitir o compartilhamento do link durante a
+apresentação. Não compartilhe esse endereço caso adicione dados reais ao projeto.
+
+### Instruções para Copilot, agentes ou outra IA no Codespaces
+
+Ao pedir para uma IA executar este projeto, forneça esta instrução:
+
+> Trabalhe na raiz do repositório. Este é um modo de demonstração sem IA externa e
+> sem banco obrigatório. Não crie chaves de API, não configure OpenAI ou PostgreSQL
+> e não execute migrações. Se as dependências ainda não estiverem instaladas, rode
+> `pip install -r backend/requirements.txt` e `npm ci --prefix frontend`. Depois rode
+> `./start-demo.sh`, aguarde as portas 8000 e 5173 iniciarem e abra a porta 5173.
+
+Para validar a execução pelo terminal, a IA pode rodar:
+
+```bash
+curl --fail http://localhost:8000/api/health
+curl --fail --head http://localhost:5173
+```
+
+A primeira resposta deve conter `"status":"ok"`; a segunda deve retornar um código
+HTTP 200.
+
+## Como funciona o modo de demonstração
+
+- Os projetos e indicadores vêm do endpoint local `/api/demo/dashboard`.
+- A avaliação usa `/api/demo/evaluate` e sempre retorna uma resposta fictícia.
+- A pequena espera ao avaliar é intencional e também simulada.
+- Nenhum conteúdo é enviado pela internet.
+- Não é necessário criar `.env`, cadastrar usuário, subir PostgreSQL ou executar
+  `alembic upgrade head` para demonstrar o dashboard.
 
 ### Roteiro rápido de apresentação
 
@@ -30,7 +168,63 @@ migrações ou cadastrar usuários para esta demonstração.
 3. Edite a descrição, se desejar, e clique em **Simular avaliação**.
 4. Mostre a nota, pontos fortes, alertas e próximo passo sugerido.
 
-O atraso curto da avaliação também é simulado; nenhum texto é enviado para uma IA.
+## Testes e verificações
+
+Frontend:
+
+```bash
+npm run build --prefix frontend
+```
+
+Backend, com o ambiente virtual criado:
+
+```bash
+backend/.venv/bin/python -m pytest backend/tests -q
+```
+
+Se o `pytest` não estiver instalado:
+
+```bash
+backend/.venv/bin/python -m pip install -r backend/requirements-dev.txt
+```
+
+## Solução de problemas
+
+### `Permission denied: ./start-demo.sh`
+
+```bash
+chmod +x start-demo.sh
+./start-demo.sh
+```
+
+### `No module named uvicorn`
+
+As dependências foram instaladas em outro Python ou ainda não foram instaladas:
+
+```bash
+backend/.venv/bin/python -m pip install -r backend/requirements.txt
+```
+
+### `npm: command not found`
+
+Instale Node.js 22. No Codespaces, reconstrua o container pelo menu de comandos com
+**Codespaces: Rebuild Container**.
+
+### Porta 5173 ou 8000 já está em uso
+
+Encerre a execução anterior com `Ctrl+C`. Para localizar processos remanescentes em
+Linux, macOS ou Codespaces:
+
+```bash
+lsof -i :5173
+lsof -i :8000
+```
+
+### O dashboard mostra que o backend está indisponível
+
+Confirme se <http://localhost:8000/api/health> responde. Ao executar manualmente,
+mantenha backend e frontend ativos em terminais diferentes. No Codespaces, confirme
+que ambas as portas aparecem na aba **Ports**.
 
 ## Tecnologias
 
@@ -88,57 +282,6 @@ farol/
 ├── .gitignore
 └── README.md
 ```
-
-## Como instalar
-
-### Pré-requisitos
-- Python 3.13 (funciona em 3.12+)
-- Node.js 22+
-
-> Esta é uma PoC/simulação: o backend usa **SQLite** por padrão, sem banco externo.
-
-### Backend
-
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env       # já vem com SQLite configurado
-alembic upgrade head       # cria as tabelas (passo obrigatório)
-uvicorn app.main:app --reload
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-## Como executar
-
-O banco padrão é SQLite, então não é preciso subir nenhum serviço externo. Garanta que as tabelas foram criadas com `alembic upgrade head` (veja acima).
-
-### Backend (desenvolvimento)
-
-```bash
-cd backend
-uvicorn app.main:app --reload
-```
-
-A API estará disponível em `http://localhost:8000` (docs em `http://localhost:8000/docs`).
-
-### Frontend (desenvolvimento)
-
-```bash
-cd frontend
-npm run dev
-```
-
-O frontend estará disponível em `http://localhost:5173`.
 
 ## Entidades do Domínio (Sprint 2)
 
