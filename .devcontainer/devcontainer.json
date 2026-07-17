@@ -1,0 +1,14 @@
+{
+  "name": "Farol - Demonstração",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.13-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  "forwardPorts": [5173, 8000],
+  "portsAttributes": {
+    "5173": { "label": "Farol", "onAutoForward": "openPreview", "visibility": "public" },
+    "8000": { "label": "API Farol", "onAutoForward": "silent" }
+  },
+  "postCreateCommand": "pip install -r backend/requirements.txt && npm ci --prefix frontend && chmod +x start-demo.sh",
+  "postAttachCommand": "echo 'Para iniciar a demonstracao, execute: ./start-demo.sh'"
+}

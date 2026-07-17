@@ -2,6 +2,36 @@
 
 Plataforma web moderna construída com Python FastAPI no backend e React com TypeScript no frontend.
 
+> **Modo demonstração:** esta versão funciona sem OpenAI, chave de API, PostgreSQL ou
+> qualquer serviço externo. Os projetos e a avaliação são fictícios e previsíveis,
+> próprios para uma apresentação.
+
+## Rodar no GitHub Codespaces (recomendado)
+
+1. No GitHub, clique em **Code → Codespaces → Create codespace on main**.
+2. Aguarde a mensagem de conclusão da configuração no terminal.
+3. Execute:
+
+```bash
+./start-demo.sh
+```
+
+O Codespaces abrirá a aplicação automaticamente. Se não abrir, acesse a aba
+**Ports** e clique no endereço da porta **5173 (Farol)**. A porta já está configurada
+como pública para facilitar o compartilhamento durante a apresentação.
+
+Para encerrar, pressione `Ctrl+C` no terminal. Não é necessário criar `.env`, rodar
+migrações ou cadastrar usuários para esta demonstração.
+
+### Roteiro rápido de apresentação
+
+1. Mostre os indicadores e os projetos recentes no dashboard.
+2. Clique em um projeto ou em **Nova avaliação**.
+3. Edite a descrição, se desejar, e clique em **Simular avaliação**.
+4. Mostre a nota, pontos fortes, alertas e próximo passo sugerido.
+
+O atraso curto da avaliação também é simulado; nenhum texto é enviado para uma IA.
+
 ## Tecnologias
 
 ### Backend

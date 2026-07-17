@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from app.config.settings import settings
-from app.routes import auth, users
+from app.routes import auth, demo, users
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -20,6 +20,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(demo.router)
 
 
 def custom_openapi():
