@@ -1,4 +1,5 @@
 # Farol
+Grupo 7: Chole, Davi, Giovana, Henrique, Kai, Kenzo, Leonardo, Luca, Lucca, Vitor
 
 Plataforma web moderna construída com Python FastAPI no backend e React com TypeScript no frontend.
 
