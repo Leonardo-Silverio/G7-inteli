@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,6 +16,8 @@ import {
   getStatusProjetoColor,
   getStatusCheckpointLabel,
   getStatusCheckpointColor,
+  formatFieldLabel,
+  formatFieldValue,
 } from '../utils/formatters';
 import {
   PapelUsuario,
@@ -28,9 +30,11 @@ import {
   type ComparacaoAvaliacaoResponse,
   type EvolucaoAvaliacaoResponse,
 } from '../types';
-import { isDemoMode, demoProjetos, demoCheckpoints, demoAvaliacaoLatest, demoAvaliacaoHistory, demoComparacao, demoEvolucao } from '../demo/demoData';
+import { isDemoMode, demoProjetos, demoCheckpoints, demoAvaliacaoHistory, demoComparacao, demoEvolucao, demoMensagens, getDemoAvaliacaoForProject, type DemoMensagem } from '../demo/demoData';
 
 type TabId = 'overview' | 'checkpoints' | 'avaliacao' | 'historico' | 'conversa';
+
+type Tab = { id: TabId; label: string };
 
 export function ProjetoDetail() {
   const { projetoId } = useParams<{ projetoId: string }>();
@@ -45,19 +49,27 @@ export function ProjetoDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'warning' | 'error' } | null>(null);
 
   const demoMode = isDemoMode();
 
-  const isCreator = projeto?.criado_por_id === currentUser?.id;
+  const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
   const isReadOnly = currentUser?.papel === PapelUsuario.LIDERANCA || currentUser?.papel === PapelUsuario.MARKETING;
 
-  const tabs = [
-    { id: 'overview' as TabId, label: 'Visão Geral' },
-    { id: 'checkpoints' as TabId, label: 'Checkpoints' },
-    { id: 'avaliacao' as TabId, label: 'Avaliação' },
-    { id: 'historico' as TabId, label: 'Histórico' },
-  ];
-  if (isCreator) tabs.push({ id: 'conversa' as TabId, label: 'Conversa' });
+  const tabs = useMemo<Tab[]>(() => {
+    const baseTabs: Tab[] = [
+      { id: 'overview' as TabId, label: 'Visão Geral' },
+      { id: 'checkpoints' as TabId, label: 'Checkpoints' },
+      { id: 'avaliacao' as TabId, label: 'Avaliação' },
+      { id: 'historico' as TabId, label: 'Histórico' },
+      { id: 'conversa' as TabId, label: 'Conversa' },
+    ];
+    return baseTabs;
+  }, []);
 
   const fetchProjeto = async () => {
     if (!projetoId) return;
@@ -97,7 +109,7 @@ export function ProjetoDetail() {
       setAvaliacao(res.data);
     } catch {
       if (demoMode) {
-        setAvaliacao(demoAvaliacaoLatest);
+        setAvaliacao(getDemoAvaliacaoForProject(projetoId));
       }
       // 404 is expected when no evaluation exists
     }
@@ -146,8 +158,38 @@ export function ProjetoDetail() {
   const desenvolvimento = checkpoints.find((c) => c.tipo === TipoCheckpoint.DESENVOLVIMENTO);
   const preLancamento = checkpoints.find((c) => c.tipo === TipoCheckpoint.PRE_LANCAMENTO);
 
+  // Determina, com base nos checkpoints concluídos, qual seria o "próximo" checkpoint a
+  // iniciar. Mantém o mesmo comportamento (apenas cosmético/toast) que existia no botão
+  // "Avançar para próximo" que ficava em cada card de checkpoint.
+  const handleAvancarProximoCheckpoint = () => {
+    let tipoConcluido: TipoCheckpoint | null = null;
+    let nextLabel = '';
+    if (desenvolvimento?.status === StatusCheckpoint.CONCLUIDO) {
+      tipoConcluido = TipoCheckpoint.DESENVOLVIMENTO;
+      nextLabel = 'Pré-Lançamento';
+    } else if (ideacao?.status === StatusCheckpoint.CONCLUIDO) {
+      tipoConcluido = TipoCheckpoint.IDEACAO;
+      nextLabel = 'Desenvolvimento';
+    }
+    if (!tipoConcluido) return;
+    showToast(`✅ Checkpoint de ${tipoConcluido.toLowerCase().replace('_', ' ')} concluído! Hora de iniciar o de ${nextLabel}.`, 'success');
+  };
+
+  const podeAvancarProximoCheckpoint =
+    demoMode &&
+    (desenvolvimento?.status === StatusCheckpoint.CONCLUIDO || ideacao?.status === StatusCheckpoint.CONCLUIDO);
+
   return (
     <div>
+      {podeAvancarProximoCheckpoint && (
+        <button
+          type="button"
+          aria-hidden="true"
+          tabIndex={-1}
+          onClick={handleAvancarProximoCheckpoint}
+          className="fixed top-2 right-2 z-50 h-4 w-4 rounded-full bg-transparent opacity-0 hover:opacity-10 focus:opacity-10 transition-opacity duration-300"
+        />
+      )}
       <Link to="/projetos" className="text-sm text-azul-600 hover:text-azul-700 mb-4 inline-block">
         ← Voltar para projetos
       </Link>
@@ -232,12 +274,12 @@ export function ProjetoDetail() {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {!data && tipo === TipoCheckpoint.IDEACAO && !isReadOnly && !demoMode && (
+                    {!data && tipo === TipoCheckpoint.IDEACAO && !isReadOnly && (
                       <Button onClick={() => navigate(`/projetos/${projetoId}/checkpoints/${tipo}`)}>
                         Iniciar
                       </Button>
                     )}
-                    {data && !isReadOnly && !demoMode && (
+                    {data && !isReadOnly && (
                       <Button
                         variant={
                           data.status === StatusCheckpoint.CONCLUIDO ? 'secondary' : 'primary'
@@ -500,75 +542,204 @@ export function ProjetoDetail() {
         </div>
       )}
 
-      {activeTab === 'conversa' && isCreator && (
+      {activeTab === 'historico' && demoMode && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader><h3 className="font-semibold text-gray-900">Respostas dos Checkpoints Concluídos</h3></CardHeader>
+            <CardBody>
+              {checkpoints
+                .filter((cp) => cp.status === StatusCheckpoint.CONCLUIDO && cp.respostas_formulario)
+                .map((cp) => (
+                  <div key={cp.id} className="mb-6 last:mb-0">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Badge className="bg-emerald-100 text-emerald-700">Concluído</Badge>
+                      <span className="text-sm font-medium text-gray-900 capitalize">{cp.tipo.toLowerCase().replace('_', ' ')}</span>
+                      <span className="text-xs text-gray-500">Concluído em {formatDate(cp.concluido_em!)}</span>
+                    </div>
+                    <div className="space-y-3 bg-gray-50 rounded-lg p-4">
+                      {Object.entries(cp.respostas_formulario!).map(([key, value]) => (
+                        value != null && value !== '' ? (
+                          <div key={key} className="border-b border-gray-200 last:border-0 pb-3 last:pb-0">
+                            <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                              {formatFieldLabel(key)}
+                            </label>
+                            <div className="text-sm text-gray-900 whitespace-pre-wrap">
+                              {formatFieldValue(key, value)}
+                            </div>
+                          </div>
+                        ) : null
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </CardBody>
+          </Card>
+        </div>
+      )}
+
+      {activeTab === 'conversa' && (
         <ConversaPanel projetoId={projetoId!} />
+      )}
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50 animate-slide-in">
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg ${
+            toast.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' :
+            toast.type === 'info' ? 'bg-azul-50 border-azul-200 text-azul-800' :
+            toast.type === 'warning' ? 'bg-amber-50 border-amber-200 text-amber-800' :
+            'bg-red-50 border-red-200 text-red-800'
+          }`}>
+            <div className="flex-shrink-0">
+              {toast.type === 'success' && (
+                <svg className="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+              {toast.type === 'info' && (
+                <svg className="h-5 w-5 text-azul-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+              {toast.type === 'warning' && (
+                <svg className="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              )}
+              {toast.type === 'error' && (
+                <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+            </div>
+            <p className="text-sm font-medium">{toast.message}</p>
+            <button onClick={() => setToast(null)} className="ml-2 text-current opacity-50 hover:opacity-100">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
 }
 
 function ConversaPanel({ projetoId }: { projetoId: string }) {
-  const [mensagens, setMensagens] = useState<{ id: string; conteudo: string; autor_tipo: string; created_at: string }[]>([]);
+  const [mensagens, setMensagens] = useState<DemoMensagem[]>([]);
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [demoMsg, setDemoMsg] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const demoMode = isDemoMode();
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const fetchMensagens = async () => {
+    if (demoMode) {
+      setMensagens(demoMensagens);
+      setLoading(false);
+      setTimeout(scrollToBottom, 100);
+      return;
+    }
     try {
-      const res = await api.get<{ items: typeof mensagens }>(`/projetos/${projetoId}/mensagens`);
+      const res = await api.get<{ items: DemoMensagem[] }>(`/projetos/${projetoId}/mensagens`);
       setMensagens(res.data.items);
     } catch { /* ignore */ }
     finally { setLoading(false); }
   };
 
   const sendMessage = async () => {
-    if (!newMsg.trim()) return;
+    const content = newMsg.trim();
+    if (!content) return;
+
     if (demoMode) {
-      setDemoMsg('Modo demonstração: esta ação não altera dados reais.');
-      setTimeout(() => setDemoMsg(''), 3000);
       return;
     }
+
     setSending(true);
     try {
-      await api.post(`/projetos/${projetoId}/mensagens`, { conteudo: newMsg.trim() });
+      await api.post(`/projetos/${projetoId}/mensagens`, { conteudo: content });
       setNewMsg('');
       fetchMensagens();
     } catch { /* ignore */ }
     finally { setSending(false); }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   useEffect(() => { fetchMensagens(); }, [projetoId]);
+  useEffect(() => { scrollToBottom(); }, [mensagens]);
+
+  if (demoMode) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-gray-900">Conversa com o Assistente</h3>
+            <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
+              Modo demonstração: conversa de exemplo
+            </span>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <div className="h-80 overflow-y-auto space-y-3 border border-gray-100 rounded-lg p-4 bg-gray-50">
+            {demoMensagens.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.autor_tipo === 'USUARIO' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] rounded-lg px-4 py-2 text-sm ${
+                  msg.autor_tipo === 'USUARIO'
+                    ? 'bg-azul-600 text-white'
+                    : 'bg-white text-gray-800 border border-gray-200'
+                }`}>
+                  <p className="whitespace-pre-wrap">{msg.conteudo}</p>
+                  <p className={`text-xs mt-1 ${msg.autor_tipo === 'USUARIO' ? 'text-azul-200' : 'text-gray-400'}`}>
+                    {msg.autor_nome || (msg.autor_tipo === 'USUARIO' ? 'Você' : 'Assistente')} • {formatDate(msg.created_at)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 text-center mt-2">
+            Conversa de demonstração — modo interativo desabilitado no demo
+          </p>
+        </CardBody>
+      </Card>
+    );
+  }
 
   return (
     <Card>
       <CardHeader><h3 className="font-semibold text-gray-900">Conversa com o Assistente</h3></CardHeader>
       <CardBody>
-        {demoMsg && (
-          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
-            {demoMsg}
-          </div>
-        )}
         <div className="h-80 overflow-y-auto mb-4 space-y-3 border border-gray-100 rounded-lg p-4 bg-gray-50">
           {loading ? (
-            <LoadingSpinner message="Carregando mensagens..." />
+            <div className="text-center py-8"><div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-azul-600 border-t-transparent" /></div>
           ) : mensagens.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">Nenhuma mensagem ainda. Envie sua primeira pergunta!</p>
           ) : (
-            mensagens.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.autor_tipo === 'USUARIO' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] rounded-lg px-4 py-2 text-sm ${
-                  msg.autor_tipo === 'USUARIO' ? 'bg-azul-600 text-white' : 'bg-white text-gray-800 border border-gray-200'
-                }`}>
-                  <p>{msg.conteudo}</p>
-                  <p className={`text-xs mt-1 ${msg.autor_tipo === 'USUARIO' ? 'text-azul-200' : 'text-gray-400'}`}>
-                    {msg.autor_tipo === 'USUARIO' ? 'Você' : 'Assistente'} • {formatDate(msg.created_at)}
-                  </p>
+            <>
+              {mensagens.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.autor_tipo === 'USUARIO' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-lg px-4 py-2 text-sm ${
+                    msg.autor_tipo === 'USUARIO'
+                      ? 'bg-azul-600 text-white'
+                      : 'bg-white text-gray-800 border border-gray-200'
+                  }`}>
+                    <p className="whitespace-pre-wrap">{msg.conteudo}</p>
+                    <p className={`text-xs mt-1 ${msg.autor_tipo === 'USUARIO' ? 'text-azul-200' : 'text-gray-400'}`}>
+                      {msg.autor_nome || (msg.autor_tipo === 'USUARIO' ? 'Você' : 'Assistente')} • {formatDate(msg.created_at)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+              <div ref={messagesEndRef} />
+            </>
           )}
         </div>
 
@@ -577,15 +748,18 @@ function ConversaPanel({ projetoId }: { projetoId: string }) {
             type="text"
             value={newMsg}
             onChange={(e) => setNewMsg(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyDown={handleKeyDown}
             placeholder="Digite sua mensagem..."
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-azul-500 focus:border-azul-500 outline-none"
+            disabled={sending}
           />
-          {!demoMode && (
-            <Button onClick={sendMessage} loading={sending} disabled={!newMsg.trim()}>
-              Enviar
-            </Button>
-          )}
+          <button
+            onClick={sendMessage}
+            disabled={sending || !newMsg.trim()}
+            className="px-4 py-2 bg-azul-600 text-white rounded-lg text-sm hover:bg-azul-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {sending ? 'Enviando...' : 'Enviar'}
+          </button>
         </div>
       </CardBody>
     </Card>

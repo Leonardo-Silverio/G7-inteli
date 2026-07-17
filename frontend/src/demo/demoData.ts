@@ -649,7 +649,7 @@ const avaliacao2: AvaliacaoCheckpointResponse = {
   },
 };
 
-const avaliacao024: AvaliacaoCheckpointResponse = {
+export const avaliacao024: AvaliacaoCheckpointResponse = {
   id: 'avaliacao-024',
   checkpoint_id: 'checkpoint-ideacao-024',
   score_alinhamento: 88,
@@ -726,7 +726,7 @@ const avaliacao024: AvaliacaoCheckpointResponse = {
   },
 };
 
-const avaliacao026: AvaliacaoCheckpointResponse = {
+export const avaliacao026: AvaliacaoCheckpointResponse = {
   id: 'avaliacao-026',
   checkpoint_id: 'checkpoint-ideacao-026',
   score_alinhamento: 78,
@@ -803,7 +803,7 @@ const avaliacao026: AvaliacaoCheckpointResponse = {
   },
 };
 
-const avaliacao029: AvaliacaoCheckpointResponse = {
+export const avaliacao029: AvaliacaoCheckpointResponse = {
   id: 'avaliacao-029',
   checkpoint_id: 'checkpoint-ideacao-029',
   score_alinhamento: 58,
@@ -878,7 +878,7 @@ const avaliacao029: AvaliacaoCheckpointResponse = {
   },
 };
 
-const avaliacao030: AvaliacaoCheckpointResponse = {
+export const avaliacao030: AvaliacaoCheckpointResponse = {
   id: 'avaliacao-030',
   checkpoint_id: 'checkpoint-ideacao-023',
   score_alinhamento: 91,
@@ -955,7 +955,7 @@ const avaliacao030: AvaliacaoCheckpointResponse = {
   },
 };
 
-const avaliacao031: AvaliacaoCheckpointResponse = {
+export const avaliacao031: AvaliacaoCheckpointResponse = {
   id: 'avaliacao-031',
   checkpoint_id: 'checkpoint-ideacao-027',
   score_alinhamento: 76,
@@ -1032,7 +1032,7 @@ const avaliacao031: AvaliacaoCheckpointResponse = {
   },
 };
 
-const avaliacao032: AvaliacaoCheckpointResponse = {
+export const avaliacao032: AvaliacaoCheckpointResponse = {
   id: 'avaliacao-032',
   checkpoint_id: 'checkpoint-ideacao-030',
   score_alinhamento: 42,
@@ -1108,6 +1108,270 @@ const avaliacao032: AvaliacaoCheckpointResponse = {
   },
 };
 
+function criarAvaliacaoDemo(params: {
+  id: string;
+  checkpointId: string;
+  classificacao: ClassificacaoFarol;
+  scoreAlinhamento: number;
+  scorePotencial: number;
+  resumoParaMarketing: string;
+  justificativa: string;
+  evaluatedAt: string;
+}): AvaliacaoCheckpointResponse {
+  return {
+    id: params.id,
+    checkpoint_id: params.checkpointId,
+    score_alinhamento: params.scoreAlinhamento,
+    score_potencial: params.scorePotencial,
+    classificacao_farol: params.classificacao,
+    criterios_alinhamento: demoCriteriosAlinhamento,
+    criterios_potencial: demoCriteriosPotencial,
+    feedback_geral: params.justificativa,
+    resumo_para_marketing: params.resumoParaMarketing,
+    evaluation_engine: 'farol-llm-v2',
+    modelo: 'gpt-4o',
+    prompt_version: '2026.07.v3',
+    criteria_version: '2026.07.v1',
+    evaluated_at: params.evaluatedAt,
+    prompt_hash: `hash-${params.id}`,
+    criteria_hash: 'xyz789uvw012',
+    created_at: params.evaluatedAt,
+    contribuicoes_alinhamento: demoContribuicoesAlinhamento,
+    contribuicoes_potencial: demoContribuicoesPotencial,
+    feedback: {
+      ...demoFeedback,
+      justificativa_classificacao: params.justificativa,
+    },
+  };
+}
+
+// Avaliações geradas para eliminar projetos "Sem Avaliação" no Portal Marketing.
+// Cada projeto foi classificado em uma das 3 categorias do farol: PRIORIDADE_MAXIMA,
+// VALE_INVESTIR_TEMPO ou BAIXA_PRIORIDADE.
+export const avaliacaoDemo002 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-002', checkpointId: 'checkpoint-ideacao-002',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 74, scorePotencial: 70,
+  resumoParaMarketing: 'Reformulação do programa de fidelidade com novas categorias, benefícios personalizados e parcerias estratégicas.',
+  justificativa: 'Bom alinhamento com a estratégia de retenção de clientes, mas depende de validação de parcerias externas e de um plano de rollout mais detalhado antes de escalar. VALE_INVESTIR_TEMPO: aprofundar o plano de parcerias e cronograma.',
+  evaluatedAt: '2026-07-16T09:00:00Z',
+});
+
+export const avaliacaoDemo003 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-003', checkpointId: 'checkpoint-ideacao-003',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 68, scorePotencial: 72,
+  resumoParaMarketing: 'Estudo e implementação de novas rotas regionais conectando capitais e cidades médias do Norte e Nordeste.',
+  justificativa: 'Potencial relevante de expansão de market share regional, porém ainda em fase de ideação com viabilidade operacional (slots, frota) a ser confirmada. VALE_INVESTIR_TEMPO: validar estudo de viabilidade antes de comprometer investimento total.',
+  evaluatedAt: '2026-07-16T09:05:00Z',
+});
+
+export const avaliacaoDemo004 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-004', checkpointId: 'checkpoint-ideacao-004',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 89, scorePotencial: 86,
+  resumoParaMarketing: 'Assistente virtual de IA generativa para atendimento personalizado 24/7, com forte potencial de redução de custo e aumento de CSAT.',
+  justificativa: 'Altíssimo alinhamento com a estratégia de experiência digital e forte potencial de receita/redução de custo via desvio de call center. PRIORIDADE_MAXIMA: viabilidade técnica comprovada e diferencial competitivo claro.',
+  evaluatedAt: '2026-07-16T09:10:00Z',
+});
+
+export const avaliacaoDemo005 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-005', checkpointId: 'checkpoint-ideacao-005',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 88, scorePotencial: 84,
+  resumoParaMarketing: 'Check-in facial e por impressão digital nos principais aeroportos, com quiosques self-service e app mobile.',
+  justificativa: 'Projeto estratégico de experiência do passageiro com forte impacto em redução de fila e custo operacional. PRIORIDADE_MAXIMA: escopo já validado com aeroportos-piloto.',
+  evaluatedAt: '2026-07-16T09:15:00Z',
+});
+
+export const avaliacaoDemo006 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-006', checkpointId: 'checkpoint-ideacao-006',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 85, scorePotencial: 88,
+  resumoParaMarketing: 'Plataforma de otimização de malha usando ML para simulação de cenários de demanda, custos e slots aeroportuários.',
+  justificativa: 'Forte potencial de ganho de rentabilidade e eficiência de frota para a Azul Conecta, com dados já disponíveis via Skywise/AHM. PRIORIDADE_MAXIMA.',
+  evaluatedAt: '2026-07-16T09:20:00Z',
+});
+
+export const avaliacaoDemo007 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-007', checkpointId: 'checkpoint-ideacao-007',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 76, scorePotencial: 74,
+  resumoParaMarketing: 'Sistema unificado de controle operacional (SOCC) para Azul Conecta com dashboards preditivos de atraso.',
+  justificativa: 'Bom alinhamento operacional, mas escopo se sobrepõe parcialmente a iniciativas de gestão operacional já em andamento na Azul Linhas. VALE_INVESTIR_TEMPO: alinhar escopo e evitar duplicidade de esforço.',
+  evaluatedAt: '2026-07-16T09:25:00Z',
+});
+
+export const avaliacaoDemo008 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-008', checkpointId: 'checkpoint-ideacao-008',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 72, scorePotencial: 75,
+  resumoParaMarketing: 'Plataforma de visibilidade end-to-end para Azul Cargo com rastreamento GPS/LoRa e sensores para cargas sensíveis.',
+  justificativa: 'Potencial sólido de redução de reclamações e aumento de receita premium, mas depende de integração com ERPs de terceiros ainda não confirmada. VALE_INVESTIR_TEMPO.',
+  evaluatedAt: '2026-07-16T09:30:00Z',
+});
+
+export const avaliacaoDemo009 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-009', checkpointId: 'checkpoint-ideacao-009',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 84, scorePotencial: 87,
+  resumoParaMarketing: 'Motor de otimização para consolidação de cargas, roteirização e priorização por SLA/valor.',
+  justificativa: 'Alto impacto direto em fator de carga e custo por kg, com forte aderência aos objetivos financeiros da vertical Cargo. PRIORIDADE_MAXIMA.',
+  evaluatedAt: '2026-07-16T09:35:00Z',
+});
+
+export const avaliacaoDemo010 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-010', checkpointId: 'checkpoint-ideacao-010',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 70, scorePotencial: 73,
+  resumoParaMarketing: 'Motor de montagem dinâmica de pacotes (voo + hotel + transfer + experiências) com precificação em tempo real.',
+  justificativa: 'Bom potencial de aumento de ticket médio, porém depende de integrações com múltiplos parceiros (Amadeus, Hotelbeds) que ainda precisam ser validadas comercialmente. VALE_INVESTIR_TEMPO.',
+  evaluatedAt: '2026-07-16T09:40:00Z',
+});
+
+export const avaliacaoDemo011 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-011', checkpointId: 'checkpoint-ideacao-011',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 69, scorePotencial: 68,
+  resumoParaMarketing: 'Sistema de recomendação "Netflix-style" para inspirar viagens via app, site e notificações contextuais.',
+  justificativa: 'Proposta interessante de personalização, mas ainda em ideação sem prova de conceito do modelo de recomendação. VALE_INVESTIR_TEMPO: validar POC antes de comprometer recursos de engenharia.',
+  evaluatedAt: '2026-07-16T09:45:00Z',
+});
+
+export const avaliacaoDemo012 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-012', checkpointId: 'checkpoint-ideacao-012',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 90, scorePotencial: 89,
+  resumoParaMarketing: 'Plataforma gamificada de fidelidade com missões, marketplace de recompensas e status match com parceiros.',
+  justificativa: 'Projeto estratégico central para a Azul Fidelidade com forte potencial de engajamento e ARPU. PRIORIDADE_MAXIMA: alto alinhamento e viabilidade técnica já em desenvolvimento.',
+  evaluatedAt: '2026-07-16T09:50:00Z',
+});
+
+export const avaliacaoDemo013 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-013', checkpointId: 'checkpoint-ideacao-013',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 73, scorePotencial: 71,
+  resumoParaMarketing: 'Motor de regras para ofertas personalizadas de benefícios baseado em CLV, frequência e canal de venda.',
+  justificativa: 'Bom potencial de receita ancilar, mas depende do amadurecimento do motor de regras e de dados históricos de CLV mais robustos. VALE_INVESTIR_TEMPO.',
+  evaluatedAt: '2026-07-16T09:55:00Z',
+});
+
+export const avaliacaoDemo014 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-014', checkpointId: 'checkpoint-ideacao-014',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 91, scorePotencial: 93,
+  resumoParaMarketing: 'Plataforma de PHM para previsão de falhas, otimização de estoque de rotáveis e planejamento de manutenção.',
+  justificativa: 'Projeto crítico de segurança e eficiência operacional, com altíssimo impacto em disponibilidade de frota. PRIORIDADE_MAXIMA.',
+  evaluatedAt: '2026-07-16T10:00:00Z',
+});
+
+export const avaliacaoDemo015 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-015', checkpointId: 'checkpoint-ideacao-015',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 77, scorePotencial: 72,
+  resumoParaMarketing: 'Inspeção visual automatizada com drones e computer vision para detecção de danos em aeronaves.',
+  justificativa: 'Bom alinhamento com segurança e eficiência, mas depende de validação regulatória e de certificação dos modelos de visão computacional. VALE_INVESTIR_TEMPO.',
+  evaluatedAt: '2026-07-16T10:05:00Z',
+});
+
+export const avaliacaoDemo016 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-016', checkpointId: 'checkpoint-ideacao-016',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 86, scorePotencial: 90,
+  resumoParaMarketing: 'Marketplace B2B para cotação, reserva e gestão de cargas conectando embarcadores e freight forwarders.',
+  justificativa: 'Novo canal de receita com alto potencial de digitalização de vendas e ganho de market share em Cargo. PRIORIDADE_MAXIMA.',
+  evaluatedAt: '2026-07-16T10:10:00Z',
+});
+
+export const avaliacaoDemo017 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-017', checkpointId: 'checkpoint-ideacao-017',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 87, scorePotencial: 91,
+  resumoParaMarketing: 'Super app unificando Azul Viagens com busca multimodal, itinerários colaborativos e IA para planejamento.',
+  justificativa: 'Aposta estratégica de grande porte para consolidar liderança em vendas online de turismo, com forte potencial de LTV e redução de CAC. PRIORIDADE_MAXIMA.',
+  evaluatedAt: '2026-07-16T10:15:00Z',
+});
+
+export const avaliacaoDemo018 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-018', checkpointId: 'checkpoint-ideacao-018',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 75, scorePotencial: 76,
+  resumoParaMarketing: 'Programa de fidelidade B2B para gestão de viagens corporativas com pool de milhas e relatórios de carbono.',
+  justificativa: 'Bom potencial de receita recorrente B2B, mas depende de integrações SAP/Concur/TOTVS ainda não mapeadas em detalhe. VALE_INVESTIR_TEMPO.',
+  evaluatedAt: '2026-07-16T10:20:00Z',
+});
+
+export const avaliacaoDemo019 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-019', checkpointId: 'checkpoint-ideacao-019',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 78, scorePotencial: 74,
+  resumoParaMarketing: 'Gêmeo digital da frota integrando sensores, manutenção e performance de voo para simulação preditiva.',
+  justificativa: 'Alto valor técnico, porém depende de parceria e integração de dados com fabricantes (Airbus/Embraer) ainda em negociação. VALE_INVESTIR_TEMPO.',
+  evaluatedAt: '2026-07-16T10:25:00Z',
+});
+
+export const avaliacaoDemo020 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-020', checkpointId: 'checkpoint-ideacao-020',
+  classificacao: ClassificacaoFarol.BAIXA_PRIORIDADE, scoreAlinhamento: 55, scorePotencial: 48,
+  resumoParaMarketing: 'App mobile dedicado para tripulação Azul Conecta com escalas, checklists digitais e microlearning.',
+  justificativa: 'Escopo interno e de nicho, com impacto direto restrito à tripulação da Conecta. BAIXA_PRIORIDADE: revisitar após conclusão de projetos operacionais de maior alcance.',
+  evaluatedAt: '2026-07-16T10:30:00Z',
+});
+
+export const avaliacaoDemo021 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-021', checkpointId: 'checkpoint-ideacao-021',
+  classificacao: ClassificacaoFarol.BAIXA_PRIORIDADE, scoreAlinhamento: 60, scorePotencial: 40,
+  resumoParaMarketing: 'Portal web e app com foco total em acessibilidade (WCAG 2.1 AAA) para passageiros PcD e idosos.',
+  justificativa: 'Importante para conformidade e imagem institucional, mas com potencial de receita direta limitado frente a outras iniciativas. BAIXA_PRIORIDADE: manter no radar como compliance, sem competir por recursos com projetos de maior retorno.',
+  evaluatedAt: '2026-07-16T10:35:00Z',
+});
+
+export const avaliacaoDemo022 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-022', checkpointId: 'checkpoint-ideacao-022',
+  classificacao: ClassificacaoFarol.PRIORIDADE_MAXIMA, scoreAlinhamento: 83, scorePotencial: 88,
+  resumoParaMarketing: 'Marketplace de experiências e atividades locais integrado ao fluxo de compra de passagens e pacotes.',
+  justificativa: 'Forte potencial de aumento de receita por passageiro e diferenciação como one-stop-shop de viagens. PRIORIDADE_MAXIMA.',
+  evaluatedAt: '2026-07-16T10:40:00Z',
+});
+
+export const avaliacaoDemo025 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-025', checkpointId: 'checkpoint-ideacao-025',
+  classificacao: ClassificacaoFarol.BAIXA_PRIORIDADE, scoreAlinhamento: 58, scorePotencial: 50,
+  resumoParaMarketing: 'Ecossistema integrado de benefícios personalizados e experiências exclusivas por perfil de cliente.',
+  justificativa: 'Sobreposição significativa de escopo com o projeto "Clube Azul+ - Nova Geração de Fidelidade" (já priorizado). BAIXA_PRIORIDADE: consolidar com a iniciativa principal em vez de investir em paralelo.',
+  evaluatedAt: '2026-07-16T10:45:00Z',
+});
+
+export const avaliacaoDemo028 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-028', checkpointId: 'checkpoint-ideacao-028',
+  classificacao: ClassificacaoFarol.BAIXA_PRIORIDADE, scoreAlinhamento: 52, scorePotencial: 45,
+  resumoParaMarketing: 'Novo fluxo digital de check-in com identificação de dúvidas e orientação personalizada ao passageiro.',
+  justificativa: 'Escopo redundante com os projetos de check-in biométrico e novo fluxo de check-in já em avaliação. BAIXA_PRIORIDADE: evitar duplicidade de investimento, consolidar iniciativas de check-in.',
+  evaluatedAt: '2026-07-16T10:50:00Z',
+});
+
+export const avaliacaoDemo031 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-031', checkpointId: 'checkpoint-ideacao-031',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 71, scorePotencial: 69,
+  resumoParaMarketing: 'Assistente de IA para apoiar equipes operacionais em decisões de despacho e gestão de irregularidades.',
+  justificativa: 'Bom potencial de eficiência operacional, mas ainda carece de dados históricos suficientes para treinar o modelo com confiabilidade. VALE_INVESTIR_TEMPO.',
+  evaluatedAt: '2026-07-16T10:55:00Z',
+});
+
+export const avaliacaoDemo032b = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-032b', checkpointId: 'checkpoint-ideacao-032',
+  classificacao: ClassificacaoFarol.BAIXA_PRIORIDADE, scoreAlinhamento: 40, scorePotencial: 38,
+  resumoParaMarketing: 'Sistema de otimização de malha para Azul Conecta com alocação de frota e simulação de cenários de demanda.',
+  justificativa: 'Escopo praticamente duplicado do projeto "Planejamento de Rotas Inteligente - Conecta" (já priorizado). BAIXA_PRIORIDADE: consolidar esforços em uma única iniciativa para evitar retrabalho.',
+  evaluatedAt: '2026-07-16T11:00:00Z',
+});
+
+export const avaliacaoDemo033 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-033', checkpointId: 'checkpoint-ideacao-033',
+  classificacao: ClassificacaoFarol.BAIXA_PRIORIDADE, scoreAlinhamento: 42, scorePotencial: 36,
+  resumoParaMarketing: 'Plataforma unificada de controle operacional para Azul Conecta com crew scheduling e despacho de voos.',
+  justificativa: 'Escopo duplicado do projeto "Gestão Operacional Integrada - Conecta" (já em avaliação). BAIXA_PRIORIDADE: unificar as duas iniciativas antes de seguir.',
+  evaluatedAt: '2026-07-16T11:05:00Z',
+});
+
+export const avaliacaoDemo034 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-034', checkpointId: 'checkpoint-ideacao-034',
+  classificacao: ClassificacaoFarol.BAIXA_PRIORIDADE, scoreAlinhamento: 45, scorePotencial: 40,
+  resumoParaMarketing: 'Redesenho completo do fluxo de check-in com biometria, computer vision e fila virtual.',
+  justificativa: 'Escopo idêntico ao projeto "Check-in Inteligente com Biometria" (já priorizado). BAIXA_PRIORIDADE: consolidar em uma única iniciativa de check-in.',
+  evaluatedAt: '2026-07-16T11:10:00Z',
+});
+
+export const avaliacaoDemo035 = criarAvaliacaoDemo({
+  id: 'avaliacao-demo-035', checkpointId: 'checkpoint-ideacao-035',
+  classificacao: ClassificacaoFarol.VALE_INVESTIR_TEMPO, scoreAlinhamento: 65, scorePotencial: 60,
+  resumoParaMarketing: 'Painel unificado de gestão à vista para centros de controle operacional com KPIs em tempo real.',
+  justificativa: 'Ferramenta interna de eficiência com bom potencial de padronização de relatórios gerenciais. VALE_INVESTIR_TEMPO: validar adoção pelos centros de controle antes de expandir escopo.',
+  evaluatedAt: '2026-07-16T11:15:00Z',
+});
+
 export const demoCheckpoints: CheckpointResponse[] = [
   {
     id: 'checkpoint-ideacao-001',
@@ -1134,6 +1398,552 @@ export const demoCheckpoints: CheckpointResponse[] = [
     resumo_para_marketing: 'Nova plataforma digital unificada para transformar a experiência do passageiro Azul.',
     created_at: '2026-01-15T10:00:00Z',
     updated_at: '2026-02-20T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-002',
+    projeto_id: 'projeto-demo-002',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-03-20T09:00:00Z',
+    iniciado_em: '2026-03-21T10:00:00Z',
+    concluido_em: '2026-05-15T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Reformulação completa do programa de fidelidade com novas categorias, benefícios personalizados e parcerias estratégicas.',
+      proposta_solucao: 'Nova arquitetura de tiers, engine de benefícios dinâmicos, marketplace de parceiros, integração com CRM e app Azul.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Integração com sistema de parceiros (bancos, varejo) e aprovação regulatória BACEN.',
+      diferencial: 'Benefícios personalizados por perfil via ML, tokenização de milhas em blockchain, status match automático.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Fidelidade 2.0: gamificação, personalização e ecossistema de parceiros para aumentar engajamento.',
+    created_at: '2026-03-20T09:00:00Z',
+    updated_at: '2026-05-15T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-003',
+    projeto_id: 'projeto-demo-003',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-05-10T14:00:00Z',
+    iniciado_em: '2026-05-11T09:00:00Z',
+    concluido_em: '2026-06-30T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Estudo e implementação de novas rotas regionais conectando capitais e cidades médias do Norte e Nordeste.',
+      proposta_solucao: 'Análise de demanda via ML, negociação de slots ANAC, acordos com aeroportos regionais, frota ATR dedicada.',
+      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.MAIS_DE_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Slots ANAC em aeroportos restritos (JPA, SLZ, THE) e infraestrutura aeroportuária.',
+      diferencial: 'Modelo de demanda preditiva para viabilidade de rotas de baixo volume, parceria com governos estaduais para incentivos.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Expansão inteligente da malha regional Norte/Nordeste baseada em dados de demanda real.',
+    created_at: '2026-05-10T14:00:00Z',
+    updated_at: '2026-06-30T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-004',
+    projeto_id: 'projeto-demo-004',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-02-10T08:00:00Z',
+    iniciado_em: '2026-02-11T09:00:00Z',
+    concluido_em: '2026-04-20T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Desenvolvimento de assistente virtual baseado em IA generativa para atendimento personalizado 24/7.',
+      proposta_solucao: 'LLM fine-tuned em dados de atendimento Azul, integração PSS/CRM/WhatsApp, RAG com knowledge base, voice support.',
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA],
+      impacto_rotas: ImpactoRotas.AMBAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Acesso a dados históricos de call center (LGPD), APIs PSS em homologação, aprovação compliance IA.',
+      diferencial: 'IA multimodal (texto/voz) com ação proativa baseada em predição de necessidades do passageiro.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'IA Concierge: assistente generativo que antecipa necessidades e resolve em uma interação.',
+    created_at: '2026-02-10T08:00:00Z',
+    updated_at: '2026-04-20T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-005',
+    projeto_id: 'projeto-demo-005',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-03-05T10:00:00Z',
+    iniciado_em: '2026-03-06T09:00:00Z',
+    concluido_em: '2026-05-30T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Implementação de check-in facial e por impressão digital nos principais aeroportos.',
+      proposta_solucao: 'Quiosques biométricos, app mobile com face ID, integração SISFRON/BPF/Receita Federal, fallback para documento físico.',
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.AMBAS,
+      existe_semelhante: true,
+      semelhante_descricao: 'Projeto similar em testes na concorrente (GOL biométrico GRU), mas sem integração Receita Federal.',
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Certificação SISFRON/BPF, acordos Receita Federal, hardware quiosques (lead time 120 dias).',
+      diferencial: 'Integração única com Receita Federal para validação documental automática, redução fila para <2min.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Check-in biométrico: fila <2min com validação automática Receita Federal nos 5 maiores aeroportos.',
+    created_at: '2026-03-05T10:00:00Z',
+    updated_at: '2026-05-30T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-006',
+    projeto_id: 'projeto-demo-006',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-01-20T09:00:00Z',
+    iniciado_em: '2026-01-21T10:00:00Z',
+    concluido_em: '2026-03-15T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Plataforma de otimização de malha usando ML para simulação de cenários de demanda, concorrência e custos.',
+      proposta_solucao: 'Motor MILP integrado a Skywise/Boeing AHM, simulador de cenários sazonais, alocação de frota otimizada.',
+      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Dados históricos de qualidade (AMOS), APIs Skywise/AHM, validação modelo com planejamento atual.',
+      diferencial: 'Otimização conjunta frota+slots+demanda sazonal com dados reais de performance Airbus/Embraer.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Conecta: ML para otimizar malha regional, aumentar rentabilidade 8% e viabilizar 8 novas rotas.',
+    created_at: '2026-01-20T09:00:00Z',
+    updated_at: '2026-03-15T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-007',
+    projeto_id: 'projeto-demo-007',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-04-01T14:00:00Z',
+    iniciado_em: '2026-04-02T09:00:00Z',
+    concluido_em: '2026-06-20T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Sistema unificado de controle operacional (SOCC) para Azul Conecta: crew, manutenção, despacho, rastreamento tempo real.',
+      proposta_solucao: 'Plataforma única integrando crew scheduling, manutenção de linha, despacho, alertas preditivos de atraso, dashboards operacionais.',
+      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Integração com sistemas legados Azul Linhas Aéreas, migração dados crew Conecta, treinamento operacional.',
+      diferencial: 'Visão unificada Azul+Conecta, alertas preditivos de atraso baseados em ML, redução 25% atrasos operacionais.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'SOCC Conecta: controle operacional unificado com IA preditiva para reduzir atrasos em 25%.',
+    created_at: '2026-04-01T14:00:00Z',
+    updated_at: '2026-06-20T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-008',
+    projeto_id: 'projeto-demo-008',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-06-01T10:00:00Z',
+    iniciado_em: '2026-06-02T09:00:00Z',
+    concluido_em: '2026-07-15T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Plataforma de visibilidade end-to-end para Azul Cargo: rastreamento GPS/LoRa de containers ULD, sensores temperatura/umidade/choque.',
+      proposta_solucao: 'Hardware LoRa em ULDs, gateway nos terminais, portal cliente com tracking público, API para ERPs embarcadores, alertas proativos.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Instalação hardware 4 terminais (GRU, VCP, CWB, POA), homologação ANATEL LoRa, integração WMS terminais.',
+      diferencial: 'Visibilidade 99.5% com sensores multimodais (GPS+LoRa), portal white-label para grandes embarcadores, compliance farmacêutico ANVISA.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Cargo Tracking: rastreamento tempo real 99.5% com sensores IoT, portal white-label e compliance ANVISA.',
+    created_at: '2026-06-01T10:00:00Z',
+    updated_at: '2026-07-15T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-009',
+    projeto_id: 'projeto-demo-009',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-02-15T11:00:00Z',
+    iniciado_em: '2026-02-16T09:00:00Z',
+    concluido_em: '2026-04-30T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Motor de otimização para consolidação de cargas, roteirização de trucks alimentadores, balanceamento de ULDs entre voos.',
+      proposta_solucao: 'Algoritmo de otimização combinatória, integração WMS 4 terminais + TMS parceiros, priorização por SLA/valor, consolidação dinâmica.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'APIs WMS 4 terminais (maturidades diferentes), TMS 12 transportadores parceiros, dados históricos consolidação.',
+      diferencial: 'Otimização conjunta capacity+pricing+routing em tempo real, não existe em concorrentes nacionais.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Otimização Carga: IA para ocupação, roteirização e rentabilidade maximizadas em tempo real.',
+    created_at: '2026-02-15T11:00:00Z',
+    updated_at: '2026-04-30T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-010',
+    projeto_id: 'projeto-demo-010',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-03-10T09:00:00Z',
+    iniciado_em: '2026-03-11T10:00:00Z',
+    concluido_em: '2026-05-20T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Motor de montagem dinâmica de pacotes (voo+hotel+transfer+experiências) com precificação em tempo real.',
+      proposta_solucao: 'Recomendação baseada em perfil/cliente/histórico, integração Amadeus/Hotelbeds/GetYourGuide/receptivos, pricing dinâmico, pagamento parcelado.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'APIs Amadeus/Hotelbeds (rate limits), contratos receptivos locais, compliance Pacote Turismo (Lei 11.771).',
+      diferencial: 'Montagem dinâmica com IA, recomendação "Netflix-style", integração nativa Fidelidade para resgate milhas em pacotes.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Viagens Inteligente: pacotes dinâmicos com IA, recomendação personalizada e resgate milhas nativo.',
+    created_at: '2026-03-10T09:00:00Z',
+    updated_at: '2026-05-20T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-011',
+    projeto_id: 'projeto-demo-011',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-05-20T15:00:00Z',
+    iniciado_em: '2026-05-21T09:00:00Z',
+    concluido_em: '2026-07-10T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Sistema de recomendação "Netflix-style" para inspirar viagens: carrossel personalizado, newsletters dinâmicas, push contextuais.',
+      proposta_solucao: 'Collaborative filtering + content-based + contextual bandits, orçamento/datas flexíveis/companhia/preferências implícitas.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_1_A_3_MESES,
+      dependencia_critica: false,
+      dependencia_descricao: null,
+      diferencial: 'Recomendação contextual em tempo real no app/site, bandits para exploração/exploração, integração nativa checkout.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Recomendação Viagens: "Netflix-style" para inspirar e converter, bandits contextual em tempo real.',
+    created_at: '2026-05-20T15:00:00Z',
+    updated_at: '2026-07-10T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-012',
+    projeto_id: 'projeto-demo-012',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-01-08T10:00:00Z',
+    iniciado_em: '2026-01-09T09:00:00Z',
+    concluido_em: '2026-03-30T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Plataforma gamificada de fidelidade: missões, desafios, níveis dinâmicos, marketplace recompensas, blockchain milhas.',
+      proposta_solucao: 'App dedicado com social features, tokenização milhas, status match parceiros, family pooling, marketplace recompensas (milhas/upgrades/experiências/produtos).',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: true,
+      semelhante_descricao: 'Concorrentes têm apps fidelidade, mas sem gamificação profunda, blockchain ou marketplace integrado.',
+      prazo_mercado: PrazoMercado.MAIS_DE_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Regulamentação blockchain/tokenização (BACEN/CVM), parcerias marketplace, migração base 12M clientes.',
+      diferencial: 'Tokenização milhas em blockchain (interoperabilidade), gamificação com missões/desafios sociais, marketplace unificado.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Clube Azul+ 360: gamificação, blockchain, marketplace e social features para engajar 60% da base.',
+    created_at: '2026-01-08T10:00:00Z',
+    updated_at: '2026-03-30T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-013',
+    projeto_id: 'projeto-demo-013',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-04-15T11:00:00Z',
+    iniciado_em: '2026-04-16T09:00:00Z',
+    concluido_em: '2026-06-30T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Motor de regras para ofertas personalizadas de benefícios: upgrade, bagagem, lounge, prioridade, isenção taxas.',
+      proposta_solucao: 'Regras baseadas em CLV, frequência, antecedência, canal, momento de vida. Entrega via app, e-mail, WhatsApp, balcão.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_1_A_3_MESES,
+      dependencia_critica: false,
+      dependencia_descricao: null,
+      diferencial: 'Motor de regras em tempo real com 50+ variáveis, entrega omnicanal, redução 30% custo benefícios não utilizados.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Benefícios Dinâmicos: ofertas personalizadas em tempo real por perfil, redução 30% desperdício.',
+    created_at: '2026-04-15T11:00:00Z',
+    updated_at: '2026-06-30T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-014',
+    projeto_id: 'projeto-demo-014',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-06-10T09:00:00Z',
+    iniciado_em: '2026-06-11T10:00:00Z',
+    concluido_em: '2026-07-20T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Plataforma de PHM integrando sensores (AHM, EHM, FOQA), ordens manutenção (AMOS), reliability data, manuais fabricante.',
+      proposta_solucao: 'ML para previsão remoção LRU, otimização estoque rotáveis, planejamento checks baseados em condição real (CBM).',
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
+      impacto_rotas: ImpactoRotas.AMBAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.MAIS_DE_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Acordos dados OEM (Airbus/Embraer), qualidade dados AMOS (3 anos limpeza), integração MRO IT (AMOS/RAMCO).',
+      diferencial: 'PHM completo com dados OEM + internos, CBM para estender intervalos, redução 50% AOG, estoque rotáveis -20%.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Manutenção Preditiva: PHM com IA para antecipar falhas, reduzir AOG 50% e otimizar frota.',
+    created_at: '2026-06-10T09:00:00Z',
+    updated_at: '2026-07-20T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-015',
+    projeto_id: 'projeto-demo-015',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-02-28T14:00:00Z',
+    iniciado_em: '2026-03-01T09:00:00Z',
+    concluido_em: '2026-05-15T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Sistema de inspeção visual automatizada usando drones 4K + computer vision (YOLOv8) para detecção danos fuselagem/asas/trem pouso/motores.',
+      proposta_solucao: 'Drones autônomos hangares, CV segmentação danos, relatórios automáticos com evidências, classificação SRM, integração MRO IT.',
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
+      impacto_rotas: ImpactoRotas.AMBAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Certificação ANAC para inspeção por drone, validação acurácia CV vs inspetor humano, integração AMOS/RAMCO.',
+      diferencial: 'Redução 40% tempo C-check, detecção 98% danos, relatórios padronizados SRM, segurança inspetores (menos trabalho em altura).',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'IA Inspeção Aeronaves: drones + CV para detectar danos 98%, reduzir C-check 40%, proteger inspetores.',
+    created_at: '2026-02-28T14:00:00Z',
+    updated_at: '2026-05-15T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-016',
+    projeto_id: 'projeto-demo-016',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-01-15T09:00:00Z',
+    iniciado_em: '2026-01-16T10:00:00Z',
+    concluido_em: '2026-04-10T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Plataforma digital B2B para cotação, reserva e gestão de cargas: marketplace embarcadores/forwarders/Azul Cargo.',
+      proposta_solucao: 'Precificação dinâmica, tracking tempo real, e-AWB, integração ERPs via API, portal white-label grandes clientes.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Integração e-AWB (IATA), onboarding embarcadores/forwarders, compliance LGPD dados sensíveis carga.',
+      diferencial: 'Marketplace B2B nativo com pricing dinâmico, e-AWB automático, white-label para grandes embarcadores, comissão por venda + SaaS.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Cargo Connect: marketplace B2B digital com pricing dinâmico, e-AWB e portal white-label.',
+    created_at: '2026-01-15T09:00:00Z',
+    updated_at: '2026-04-10T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-017',
+    projeto_id: 'projeto-demo-017',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-02-01T10:00:00Z',
+    iniciado_em: '2026-02-02T09:00:00Z',
+    concluido_em: '2026-05-15T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Super app unificando Azul Viagens: busca multi-modal, itinerários colaborativos, pagamentos parcelados, seguro integrado, assistente IA.',
+      proposta_solucao: 'Busca voo+hotel+experiências+transporte, carrinho compartilhado, BNPL, seguro viagem, IA planejamento, fidelidade gamificada.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: true,
+      semelhante_descricao: 'Decolar/Booking/Expedia têm super apps, mas sem integração nativa programa fidelidade aérea + malha própria.',
+      prazo_mercado: PrazoMercado.MAIS_DE_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Integração Amadeus/Hotelbeds/GetYourGuide, compliance seguro viagem (SUSEP), LGPD dados sensíveis viagem.',
+      diferencial: 'Único com malha aérea própria + fidelidade integrada + IA planejamento + BNPL nativo + gamificação.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Viagens Super App: busca multi-modal, IA planejamento, BNPL, fidelidade gamificada - #1 Brasil.',
+    created_at: '2026-02-01T10:00:00Z',
+    updated_at: '2026-05-15T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-018',
+    projeto_id: 'projeto-demo-018',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-03-10T08:00:00Z',
+    iniciado_em: '2026-03-11T09:00:00Z',
+    concluido_em: '2026-06-20T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Programa fidelidade B2B para gestão viagens corporativas: pool milhas empresa, relatórios carbono, políticas configuráveis, workflow aprovação.',
+      proposta_solucao: 'Pool milhas corporativo, dashboard carbono, políticas viagem customizáveis, workflow aprovação, integração SAP/Concur/TOTVS, benefícios exclusivos (lounge/prioridade/franquia extra).',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Integração SAP/Concur/TOTVS (APIs diferentes), compliance LGPD dados corporativos, contratos enterprise.',
+      diferencial: 'Único com pool milhas + carbono + workflow + integração ERP nativa + benefícios aéreos exclusivos.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Azul Empresas: fidelidade B2B com pool milhas, carbono, workflow e integração ERP nativa.',
+    created_at: '2026-03-10T08:00:00Z',
+    updated_at: '2026-06-20T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-019',
+    projeto_id: 'projeto-demo-019',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-04-01T09:00:00Z',
+    iniciado_em: '2026-04-02T10:00:00Z',
+    concluido_em: '2026-06-30T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Gêmeo digital da frota integrando sensores (AHM/FOQA), manutenção, performance voo, clima. Simulação preditiva desgaste, otimização rotas combustível, CBM.',
+      proposta_solucao: 'Digital twin frota completa, simulação desgaste preditiva, otimização rotas para eficiência combustível, planejamento checks condição real (CBM), integração OEM.',
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
+      impacto_rotas: ImpactoRotas.AMBAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.MAIS_DE_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Acordos dados OEM (Airbus/Embraer), volume dados sensores (TB/dia), validação modelo digital twin vs real.',
+      diferencial: 'Digital twin completo frota (não só componentes), otimização combustível 3%, extensão intervalos manutenção 15%, evita 90% AOG não planejados.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'TecOps Digital Twin: gêmeo digital frota para otimizar combustível 3%, estender manutenção 15%, evitar AOG.',
+    created_at: '2026-04-01T09:00:00Z',
+    updated_at: '2026-06-30T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-020',
+    projeto_id: 'projeto-demo-020',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-05-15T11:00:00Z',
+    iniciado_em: '2026-05-16T09:00:00Z',
+    concluido_em: '2026-07-15T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'App mobile dedicado tripulação Azul Conecta: escalas, briefing operacional, checklists digitais, reporte fadiga, comunicação base, treinamentos microlearning.',
+      proposta_solucao: 'Offline-first para bases remotas, escalas/briefing/checklists digitais, reporte fadiga regulatório, comunicação push, microlearning, integração SOCC/sistemas Azul Linhas.',
+      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Integração SOCC legada, homologação ANAC/RBHA para checklists digitais, adoção tripulação bases remotas (offline-first).',
+      diferencial: 'Offline-first nativo, 100% digitalização papel, conformidade ANAC/RBHA, microlearning regulatório, integração Azul Linhas.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Conecta Crew App: app offline-first para tripulação regional, 100% digital, conformidade ANAC.',
+    created_at: '2026-05-15T11:00:00Z',
+    updated_at: '2026-07-15T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-021',
+    projeto_id: 'projeto-demo-021',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-06-01T14:00:00Z',
+    iniciado_em: '2026-06-02T09:00:00Z',
+    concluido_em: '2026-07-20T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Portal web e app foco total acessibilidade (WCAG 2.1 AAA): leitores tela, Libras, alto contraste, navegação teclado, voz, fontes ajustáveis.',
+      proposta_solucao: 'Jornada inclusiva compra-embarque-voo, componentes acessíveis reutilizáveis, parcerias ONGs, certificação acessibilidade digital, testes com usuários PcD.',
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.AMBAS,
+      existe_semelhante: false,
+      semelhante_descricao: null,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: false,
+      dependencia_descricao: null,
+      diferencial: 'WCAG 2.1 AAA completo (não só AA), Libras nativo, jornada inclusiva ponta-a-ponta, certificação formal, parcerias ONGs validadoras.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Portal Acessibilidade: WCAG 2.1 AAA, Libras, jornada inclusiva completa - referência mercado.',
+    created_at: '2026-06-01T14:00:00Z',
+    updated_at: '2026-07-20T17:00:00Z',
+  },
+  {
+    id: 'checkpoint-ideacao-022',
+    projeto_id: 'projeto-demo-022',
+    tipo: TipoCheckpoint.IDEACAO,
+    status: StatusCheckpoint.CONCLUIDO,
+    sugerido_em: '2026-06-15T10:00:00Z',
+    iniciado_em: '2026-06-16T09:00:00Z',
+    concluido_em: '2026-07-25T17:00:00Z',
+    respostas_formulario: {
+      descricao_projeto: 'Marketplace de experiências e atividades locais integrados ao fluxo de compra: passeios, gastronomia, aventura, cultura.',
+      proposta_solucao: 'Curadoria receptivos certificados, avaliações viajantes, reserva instantânea, cancelamento flexível, integração GetYourGuide/Viator/receptivos locais, comissão por venda + SaaS parceiros.',
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.RECONQUISTA_CLIENTE],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
+      existe_semelhante: true,
+      semelhante_descricao: 'GetYourGuide/Viator/Airbnb Experiences operam no Brasil, mas não integrados ao fluxo compra passagem aérea.',
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
+      dependencia_critica: true,
+      dependencia_descricao: 'Contratos receptivos locais (curadoria/certificação), integração GetYourGuide/Viator APIs, compliance cancelamento flexível.',
+      diferencial: 'Integrado nativamente ao fluxo compra passagem (upsell no checkout), receptivos certificados Azul, comissão + SaaS duplo.',
+      info_nao_compartilhada: false,
+      info_nao_compartilhada_descricao: null,
+    },
+    resumo_para_marketing: 'Experiências Locais: marketplace integrado ao checkout, receptivos certificados, receita +40%/pax.',
+    created_at: '2026-06-15T10:00:00Z',
+    updated_at: '2026-07-25T17:00:00Z',
   },
   {
     id: 'checkpoint-desenvolvimento-001',
@@ -1185,7 +1995,7 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Assistente digital inteligente para personalizar a jornada do passageiro antes, durante e depois do voo, oferecendo recomendações, suporte proativo e serviços personalizados.',
       proposta_solucao: 'IA generativa integrada a PSS, CRM, WhatsApp e App Azul. Motor de recomendação contextual + chatbot proativo + voice support.',
-      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.INOVACAO_TECNOLOGICA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: false,
       semelhante_descricao: null,
@@ -1211,7 +2021,7 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Desenvolvimento do IA Concierge - fase de implementação: motor de IA, integrações, interface conversacional.',
       proposta_solucao: 'Squads: IA/ML, Integrações PSS/CRM, Conversational UX, Platform/DevOps, Security/Compliance.',
-      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.INOVACAO_TECNOLOGICA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: false,
       semelhante_descricao: null,
@@ -1250,11 +2060,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Plataforma de análise preditiva para identificar padrões de desgaste, antecipar falhas e reduzir indisponibilidade de aeronaves.',
       proposta_solucao: 'Integração AHM/EHM/FOQA + AMOS/M&E + ML models para previsão de remoção de LRUs e otimização de estoque rotáveis.',
-      focos_azul: [FocoAzul.SEMPRE_SEGURO, FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Projeto TecOps Digital Twin (projeto-demo-019) - gêmeo digital da frota com foco mais amplo.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'Acesso a dados OEM (Airbus/Embraer) e qualidade histórica de dados de manutenção (AMOS).',
       diferencial: 'Foco especializado em manutenção preditiva de componentes críticos (LRUs) com modelo de falha por modo de degradação.',
@@ -1276,11 +2086,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Implementação da plataforma de manutenção preditiva: ingestão de dados de sensores, modelos ML, dashboards operacionais.',
       proposta_solucao: 'Squads: Data Engineering (ingestão AHM/EHM), ML Models (falha LRUs), Ops Integration (AMOS), UX Dashboards.',
-      focos_azul: [FocoAzul.SEMPRE_SEGURO, FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'TecOps Digital Twin - escopo complementar, este focado em LRUs críticos.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'Acordos de compartilhamento dados OEM; limpeza e validação de histórico AMOS (3 anos).',
       diferencial: 'Ensemble de modelos por tipo de componente (motor, avionics, landing gear) com explainability para engenheiros.',
@@ -1315,11 +2125,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Ecossistema integrado de benefícios personalizados, ofertas dinâmicas e experiências exclusivas baseadas no perfil de cada cliente.',
       proposta_solucao: 'Plataforma de regras dinâmicas + motor de ofertas personalizadas + marketplace de recompensas + gamificação social.',
-      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.INOVACAO_TECNOLOGICA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Clube Azul+ Nova Geração (projeto-demo-012) - este foca em ecossistema 360 e benefícios dinâmicos por perfil.',
-      prazo_mercado: PrazoMercado.MAIS_DE_12_MESES,
+      prazo_mercado: PrazoMercado.MAIS_DE_6_MESES,
       dependencia_critica: false,
       dependencia_descricao: null,
       diferencial: 'Benefícios verdadeiramente dinâmicos calculados em tempo real por CLV, momento de vida e contexto de viagem.',
@@ -1367,11 +2177,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Sistema de apoio à decisão para melhorar ocupação, roteirização, prazo e rentabilidade das operações de carga.',
       proposta_solucao: 'Motor de otimização (MILP + heurísticas) para consolidação, roteirização side-car, balanceamento ULDs e priorização por SLA/valor.',
-      focos_azul: [FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Otimização Logística e Roteirização (projeto-demo-009) - este foca em decisão estratégica de capacidade e pricing.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'Integração WMS terminais (GRU, VCP, CWB, POA) e TMS transportadores parceiros.',
       diferencial: 'Otimização conjunta de capacity planning + pricing dinâmico + roteirização integrada em única plataforma.',
@@ -1393,11 +2203,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Desenvolvimento do motor de otimização e integrações com WMS/TMS para Otimização Inteligente de Cargas.',
       proposta_solucao: 'Squads: Optimization Engine, WMS Integration, TMS Integration, Pricing Module, UX Cargo Ops.',
-      focos_azul: [FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.FORTALECIMENTO_MALHA_REGIONAL],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Projeto-demo-009 complementar - este com foco estratégico de capacity/pricing.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'APIs WMS terminais em validação; TMS parceiros com diferentes níveis de maturidade.',
       diferencial: 'Digital twin da rede de carga para simulação de cenários what-if em tempo real.',
@@ -1432,8 +2242,8 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Ferramenta analítica para apoiar decisões sobre novas rotas regionais considerando demanda, conectividade e viabilidade operacional.',
       proposta_solucao: 'Modelo de simulação de demanda regional + otimização de frota ATR/Embraer + análise de conectividade hub-and-spoke + viabilidade econômica por rota.',
-      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
-      impacto_rotas: ImpactoRotas.REGIONAL,
+      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
       existe_semelhante: true,
       semelhante_descricao: 'Planejamento de Rotas Inteligente Conecta (projeto-demo-006) - este foca em decisão de novas rotas vs otimização de malha existente.',
       prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
@@ -1484,7 +2294,7 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Novo fluxo digital de check-in com identificação de dúvidas, oferta de serviços e orientação personalizada ao passageiro.',
       proposta_solucao: 'Redesign do fluxo check-in (web/mobile/totem) com IA para detecção de hesitação, oferta contextual de serviços (bagagem, assento, lounge) e guia passo-a-passo personalizado.',
-      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.INOVACAO_TECNOLOGICA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Check-in Inteligente com Biometria (projeto-demo-005) e Novo Fluxo Check-in Inteligente (projeto-demo-006) - este foca em assistência cognitiva e personalização.',
@@ -1510,7 +2320,7 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Implementação do fluxo de check-in assistido: frontend conversacional, motor de detecção de hesitação, integração ofertas.',
       proposta_solucao: 'Squads: Conversational Frontend, Hesitation Detection ML, Offers Engine, PSS Integration, Accessibility.',
-      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.INOVACAO_TECNOLOGICA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Projetos check-in biométrico e fluxo inteligente - este diferencial é assistência cognitiva.',
@@ -1549,11 +2359,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Revisão de cores, ícones e organização visual do portal interno, sem alteração dos processos operacionais existentes.',
       proposta_solucao: 'Design system update: nova paleta, iconografia consistente, reorganização information architecture. Aplicação gradual via feature flags.',
-      focos_azul: [FocoAzul.INOVACAO_TECNOLOGICA],
-      impacto_rotas: ImpactoRotas.NENHUMA,
+      focos_azul: [FocoAzul.DIVERSIFICACAO_RECEITA],
+      impacto_rotas: ImpactoRotas.NAO_E_SOBRE_ROTAS,
       existe_semelhante: false,
       semelhante_descricao: null,
-      prazo_mercado: PrazoMercado.ATE_3_MESES,
+      prazo_mercado: PrazoMercado.DE_1_A_3_MESES,
       dependencia_critica: false,
       dependencia_descricao: null,
       diferencial: 'Foco puramente visual/UX sem risco operacional - quick win de usabilidade.',
@@ -1605,7 +2415,7 @@ export const demoCheckpoints: CheckpointResponse[] = [
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: false,
       semelhante_descricao: null,
-      prazo_mercado: PrazoMercado.ATE_3_MESES,
+      prazo_mercado: PrazoMercado.DE_1_A_3_MESES,
       dependencia_critica: false,
       dependencia_descricao: null,
       diferencial: 'Execução rápida, baixo custo, foco em conversão imediata de pacotes sazonais.',
@@ -1653,11 +2463,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Assistente de IA para apoiar equipes operacionais em tempo real: decisões de despacho, gestão de irregularidades, otimização de turnos e comunicação com tripulação.',
       proposta_solucao: 'IA generativa integrada a SOCC, crew scheduling, PSS e sistemas de comunicação. Motor de recomendação para decisões operacionais + chat interface para tripulantes e despachantes.',
-      focos_azul: [FocoAzul.SEMPRE_SEGURO, FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.INOVACAO_TECNOLOGICA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DIVERSIFICACAO_RECEITA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: false,
       semelhante_descricao: null,
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'Integração com SOCC legado e sistemas de crew scheduling (Amadeus/Jeppesen). Aprovação segurança operacional.',
       diferencial: 'IA com conhecimento operacional profundo (FARs, manuais, procedimentos Azul) para recomendação explicável em tempo real.',
@@ -1679,11 +2489,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Desenvolvimento do Assistente Inteligente para Operações: motor de IA, integrações SOCC/crew, interface conversacional.',
       proposta_solucao: 'Squads: IA/ML Operacional, Integração SOCC, Crew Systems Integration, Conversational UX, Safety & Compliance.',
-      focos_azul: [FocoAzul.SEMPRE_SEGURO, FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.INOVACAO_TECNOLOGICA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: false,
       semelhante_descricao: null,
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'APIs SOCC em validação; homologação ANAC para uso de IA em decisões operacionais críticas.',
       diferencial: 'RAG especializado em regulamentação aeronáutica brasileira + procedimentos Azul + dados históricos de irregularidades.',
@@ -1718,11 +2528,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Plataforma unificada de controle operacional para Azul Conecta: crew scheduling, manutenção de linha, despacho de voos, gestão de irregularidades e comunicação com tripulação. Integração com sistemas da Azul Linhas Aéreas para sinergia operacional.',
       proposta_solucao: 'SOCC unificado com módulos de crew, manutenção, despacho e irregularidades. Integração via API com sistemas Azul Linhas Aéreas. Dashboard operacional em tempo real.',
-      focos_azul: [FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.SEMPRE_SEGURO, FocoAzul.DISCIPLINA_FINANCEIRA],
-      impacto_rotas: ImpactoRotas.REGIONAL,
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
       existe_semelhante: true,
       semelhante_descricao: 'Gestão Operacional Integrada - Conecta (projeto-demo-007) - este foca na integração com Azul Linhas Aéreas.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'Integração com sistemas legados da Azul Linhas Aéreas (SOCC, Crew). Padronização de processos entre Azul e Conecta.',
       diferencial: 'Visão unificada Azul + Conecta em tempo real, com alertas preditivos de irregularidades cross-fleet.',
@@ -1770,7 +2580,7 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Redesenho completo do fluxo de check-in (web, mobile, totem, balcão) com biometria, reconhecimento de bagagem por computer vision, fila virtual e integração com programa de fidelidade para priorização. Piloto em GRU, CGH, BSB, REC.',
       proposta_solucao: 'Nova jornada de check-in omnicanal com biometria facial, CV para bagagem, fila virtual via app, integração Fidelidade para priorização. Piloto em 4 aeroportos principais.',
-      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.INOVACAO_TECNOLOGICA, FocoAzul.EFICIENCIA_OPERACIONAL],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Check-in Inteligente com Biometria (projeto-demo-005) e Check-in Inteligente e Assistido (projeto-demo-028) - este foca em redesenho completo omnicanal.',
@@ -1822,11 +2632,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Painel unificado de gestão à vista para centros de controle operacional: KPIs em tempo real (OTP, regularidade, custos, crew, manutenção), alertas configuráveis, drill-down por base/aeronave/rota e exportação para reuniões de governança.',
       proposta_solucao: 'Dashboard operacional em tempo real agregando dados de SOCC, manutenção, crew, financeiro. Alertas configuráveis por threshold. Drill-down navegável. Exportação PDF/Excel para governança.',
-      focos_azul: [FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.SEMPRE_SEGURO],
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.RECONQUISTA_CLIENTE],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: false,
       semelhante_descricao: null,
-      prazo_mercado: PrazoMercado.ATE_3_MESES,
+      prazo_mercado: PrazoMercado.DE_1_A_3_MESES,
       dependencia_critica: false,
       dependencia_descricao: null,
       diferencial: 'Visão única cross-fonte (SOCC + Manutenção + Crew + Financeiro) em tempo real com alertas preditivos.',
@@ -1874,11 +2684,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Sistema de otimização de malha para Azul Conecta: planejamento de rotas regionais, alocação de frotas ATR/Embraer, simulação de cenários de demanda sazonal, integração com sistemas de slot (ANAC) e coordenadas de aeroportos regionais. Motor de otimização com programação linear inteira mista (MILP).',
       proposta_solucao: 'Motor MILP para otimização de malha regional: alocação frota ATR/Embraer, simulação demanda sazonal, integração slots ANAC, coordenadas aeroportos regionais. Cenários what-if para novas rotas.',
-      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
-      impacto_rotas: ImpactoRotas.REGIONAL,
+      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
       existe_semelhante: true,
       semelhante_descricao: 'Planejamento de Rotas Inteligente - Conecta (projeto-demo-006) - este com foco em MILP e integração ANAC slots.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'Dados de slots ANAC. Coordenadas e restrições aeroportos regionais. Dados históricos demanda Conecta.',
       diferencial: 'Otimização MILP pura com restrições reais de slots ANAC e infraestrutura aeroportos regionais brasileiros.',
@@ -1900,11 +2710,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Desenvolvimento do motor MILP e integrações para Planejamento de Rotas - Azul Conecta.',
       proposta_solucao: 'Squads: Optimization Engine (MILP), ANAC Slots Integration, Airport Data, Fleet Allocation, UX Planning.',
-      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.DISCIPLINA_FINANCEIRA],
-      impacto_rotas: ImpactoRotas.REGIONAL,
+      focos_azul: [FocoAzul.FORTALECIMENTO_MALHA_REGIONAL, FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
       existe_semelhante: true,
       semelhante_descricao: 'Projeto-demo-006 complementar - este com MILP e foco slots ANAC.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'API slots ANAC em homologação. Dados aeroportos regionais dispersos.',
       diferencial: 'Solver MILP customizado para restrições brasileiras (slots, curfew, infraestrutura pista).',
@@ -1939,11 +2749,11 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Plataforma unificada de controle operacional para Azul Conecta: crew scheduling, manutenção de linha, despacho de voos, gestão de irregularidades e comunicação com tripulação. Integração com sistemas da Azul Linhas Aéreas para sinergia operacional.',
       proposta_solucao: 'SOCC unificado Conecta: crew scheduling (Amadeus), manutenção linha, despacho voo, irregularidades, comunicação tripulação. Integração bidirecional com SOCC Azul Linhas Aéreas.',
-      focos_azul: [FocoAzul.EFICIENCIA_OPERACIONAL, FocoAzul.SEMPRE_SEGURO, FocoAzul.DISCIPLINA_FINANCEIRA],
-      impacto_rotas: ImpactoRotas.REGIONAL,
+      focos_azul: [FocoAzul.DISCIPLINA_FINANCEIRA, FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DISCIPLINA_FINANCEIRA],
+      impacto_rotas: ImpactoRotas.ROTAS_REGIONAIS,
       existe_semelhante: true,
       semelhante_descricao: 'Gestão Operacional Integrada - Conecta (projeto-demo-007) - este com foco integração SOCC Azul Linhas Aéreas.',
-      prazo_mercado: PrazoMercado.DE_6_A_12_MESES,
+      prazo_mercado: PrazoMercado.DE_3_A_6_MESES,
       dependencia_critica: true,
       dependencia_descricao: 'Integração SOCC Azul Linhas Aéreas (sistema legado). API Amadeus crew scheduling.',
       diferencial: 'Visão unificada Conecta + Azul Linhas: crew sharing, irregularidades cross-fleet, despacho integrado.',
@@ -1991,7 +2801,7 @@ export const demoCheckpoints: CheckpointResponse[] = [
     respostas_formulario: {
       descricao_projeto: 'Redesenho completo do fluxo de check-in (web, mobile, totem, balcão) com biometria, reconhecimento de bagagem por computer vision, fila virtual e integração com programa de fidelidade para priorização. Piloto em GRU, CGH, BSB, REC.',
       proposta_solucao: 'Fluxo check-in unificado: biometria facial/digital, CV bagagem, fila virtual, priorização fidelidade. Piloto 4 aeroportos. Integração PSS + Fidelidade + Aeroportuária.',
-      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.INOVACAO_TECNOLOGICA, FocoAzul.EFICIENCIA_OPERACIONAL],
+      focos_azul: [FocoAzul.RECONQUISTA_CLIENTE, FocoAzul.DIVERSIFICACAO_RECEITA, FocoAzul.DISCIPLINA_FINANCEIRA],
       impacto_rotas: ImpactoRotas.AMBAS,
       existe_semelhante: true,
       semelhante_descricao: 'Check-in Inteligente com Biometria (projeto-demo-005) e Check-in Inteligente e Assistido (projeto-demo-028) - este unifica web/mobile/totem/balcão com fila virtual.',
@@ -2040,8 +2850,22 @@ export const demoAvaliacaoLatest: AvaliacaoLatestResponse = {
 };
 
 export const demoAvaliacaoHistory: AvaliacaoHistoryResponse = {
-  items: [avaliacao2, avaliacao1],
-  total: 2,
+  items: [
+    // projeto-demo-001
+    avaliacao2, avaliacao1,
+    // projeto-demo-002 a projeto-demo-022 (exceto 006/007/... que também estão aqui)
+    avaliacaoDemo002, avaliacaoDemo003, avaliacaoDemo004, avaliacaoDemo005, avaliacaoDemo006,
+    avaliacaoDemo007, avaliacaoDemo008, avaliacaoDemo009, avaliacaoDemo010, avaliacaoDemo011,
+    avaliacaoDemo012, avaliacaoDemo013, avaliacaoDemo014, avaliacaoDemo015, avaliacaoDemo016,
+    avaliacaoDemo017, avaliacaoDemo018, avaliacaoDemo019, avaliacaoDemo020, avaliacaoDemo021,
+    avaliacaoDemo022,
+    // projeto-demo-023 a projeto-demo-030
+    avaliacao030, avaliacao024, avaliacaoDemo025, avaliacao026, avaliacao031, avaliacaoDemo028,
+    avaliacao029, avaliacao032,
+    // projeto-demo-031 a projeto-demo-035
+    avaliacaoDemo031, avaliacaoDemo032b, avaliacaoDemo033, avaliacaoDemo034, avaliacaoDemo035,
+  ],
+  total: 35,
 };
 
 export const demoComparacao: ComparacaoAvaliacaoResponse = {
@@ -2111,6 +2935,104 @@ export const demoEvolucao: EvolucaoAvaliacaoResponse = {
   total: 2,
 };
 
+export function getDemoAvaliacaoForProjeto(projetoId: string): AvaliacaoLatestResponse | null {
+  return getDemoAvaliacaoForProject(projetoId);
+}
+
+export interface DemoMensagem {
+  id: string;
+  conteudo: string;
+  autor_tipo: 'USUARIO' | 'ASSISTENTE';
+  autor_nome?: string;
+  created_at: string;
+}
+
+export const demoMensagens: DemoMensagem[] = [
+  {
+    id: 'msg-demo-001',
+    conteudo: 'Olá! Sou o Assistente Farol. Estou aqui para ajudar a analisar e refinar seu projeto "Nova experiência digital para passageiros". Como posso ajudar hoje?',
+    autor_tipo: 'ASSISTENTE',
+    autor_nome: 'Assistente Farol',
+    created_at: '2026-07-10T09:00:00Z',
+  },
+  {
+    id: 'msg-demo-002',
+    conteudo: 'Olá! Gostaria de apresentar o projeto: estamos desenvolvendo uma plataforma digital unificada para melhorar a experiência do passageiro em todos os pontos de contato: compra, check-in, embarque, voo e pós-voo. Inclui aplicativo mobile reformulado, portal web responsivo e integração com sistemas legados (PSS, Revenue Management, Fidelidade). O objetivo é aumentar NPS em 15 pontos, reduzir tempo de check-in em 40% e aumentar conversão de vendas diretas em 25% até dezembro de 2026.',
+    autor_tipo: 'USUARIO',
+    autor_nome: 'Vertical Azul Linhas Aéreas',
+    created_at: '2026-07-10T09:05:00Z',
+  },
+  {
+    id: 'msg-demo-003',
+    conteudo: 'Excelente contexto! O projeto está muito bem estruturado e alinhado aos pilares de **Reconquista de Cliente** e **Fortalecimento da Malha Regional**. A proposta de experiência unificada endereça diretamente as principais dores identificadas nas pesquisas recentes.\n\nAntes de avançar, preciso de um esclarecimento importante do Marketing: como garantir que a nova identidade visual e o tom de voz do app/portal estejam 100% alinhados ao Brand Guide v3.2? Há alguma diretriz específica para os novos componentes de check-in biométrico e integração nativa com o programa de fidelidade?',
+    autor_tipo: 'ASSISTENTE',
+    autor_nome: 'Assistente Farol (simulando pergunta do Marketing)',
+    created_at: '2026-07-10T09:10:00Z',
+  },
+  {
+    id: 'msg-demo-004',
+    conteudo: 'Ótima pergunta do Marketing! Sobre o alinhamento de marca:\n\n1. **Brand Guide v3.2**: Já validamos todos os componentes do Design System Figma com o time de Brand. Os novos componentes (check-in biométrico, card de fidelidade, carrossel de recomendações) seguem o guia de estilo à risca — cores, tipografia, ícones, spacing.\n\n2. **Tom de voz**: O conteúdo conversacional do app foi revisado pelo time de UX Writing seguindo o "Tom de Voz Azul" — empático, direto, sem jargões técnicos.\n\n3. **Check-in biométrico**: Componentes validados no Figma (arquivo "Check-in Biométrico v2.1") com aprovação do Brand em 15/06/2026.\n\n4. **Integração Fidelidade**: O card de benefícios dinâmicos usa os mesmos tokens de design do app atual de Fidelidade, garantindo consistência visual.\n\nPodemos agendar uma validação rápida com o Marketing na próxima semana para walkthrough dos protótipos?',
+    autor_tipo: 'USUARIO',
+    autor_nome: 'Vertical Azul Linhas Aéreas',
+    created_at: '2026-07-10T09:20:00Z',
+  },
+  {
+    id: 'msg-demo-005',
+    conteudo: 'Perfeito! A validação com Brand está clara e documentada. Isso elimina um dos principais riscos identificados na avaliação anterior (critério "Uso correto produtos marca" estava em 78, deve subir com essa evidência).\n\n**Próximo passo sugerido pelo Marketing**:\n\nAgendar **sessão de validação de usabilidade com passageiros reais** (mínimo 8 participantes: 4 frequentes, 4 ocasionais, 2 PcD) focada nos novos fluxos de:\n1. Check-in biométrico (totem + mobile)\n2. Resgate de benefícios Fidelidade no fluxo de compra\n3. Recomendação contextual de ancilares (bagagem, assento, lounge)\n\n**Cronograma sugerido**:\n- Semana 1-2 (ago/26): Recrutamento + roteiro de testes\n- Semana 3: Execução testes (lab Azul GRU + remoto)\n- Semana 4: Relatório + ajustes no Design System\n\nIsso permitirá validar o critério **"Clareza para o passageiro"** (atualmente 82) e mitigar o risco de "baixa adoção inicial por tripulantes" identificado na avaliação.\n\nQuer que eu agende a sessão com o time de Research ou prefere que o Marketing lidere?',
+    autor_tipo: 'ASSISTENTE',
+    autor_nome: 'Assistente Farol (sugestão de próximo passo do Marketing)',
+    created_at: '2026-07-10T09:30:00Z',
+  },
+  {
+    id: 'msg-demo-006',
+    conteudo: 'Perfeito! Vamos alinhar com o time de Research para liderar os testes de usabilidade. O Marketing pode apoiar com o recrutamento (base de clientes Fidelidade Diamante/Safira) e definição dos cenários de teste.\n\nPróximos passos acordados:\n1. **Vertical** agenda kick-off com Research até 25/07\n2. **Marketing** envia lista de recrutamento até 28/07\n3. **Testes** executados na semana de 04/08\n4. **Resultados** consolidados até 11/08 para alimentar a próxima avaliação Farol (checkpoint Desenvolvimento)\n\nVou registrar isso como ação no checkpoint de Desenvolvimento. Obrigado pela colaboração!',
+    autor_tipo: 'USUARIO',
+    autor_nome: 'Vertical Azul Linhas Aéreas',
+    created_at: '2026-07-10T09:40:00Z',
+  },
+];
+
 export const shouldUseDemoData = (): boolean => {
   return isDemoMode();
 };
+
+export function getDemoAvaliacaoForProject(projetoId: string): AvaliacaoLatestResponse {
+  const avaliacoes: Record<string, AvaliacaoLatestResponse> = {
+    'projeto-demo-001': { avaliacao: avaliacao2, total_historico: 2 },
+    'projeto-demo-002': { avaliacao: avaliacaoDemo002, total_historico: 1 },
+    'projeto-demo-003': { avaliacao: avaliacaoDemo003, total_historico: 1 },
+    'projeto-demo-004': { avaliacao: avaliacaoDemo004, total_historico: 1 },
+    'projeto-demo-005': { avaliacao: avaliacaoDemo005, total_historico: 1 },
+    'projeto-demo-006': { avaliacao: avaliacaoDemo006, total_historico: 1 },
+    'projeto-demo-007': { avaliacao: avaliacaoDemo007, total_historico: 1 },
+    'projeto-demo-008': { avaliacao: avaliacaoDemo008, total_historico: 1 },
+    'projeto-demo-009': { avaliacao: avaliacaoDemo009, total_historico: 1 },
+    'projeto-demo-010': { avaliacao: avaliacaoDemo010, total_historico: 1 },
+    'projeto-demo-011': { avaliacao: avaliacaoDemo011, total_historico: 1 },
+    'projeto-demo-012': { avaliacao: avaliacaoDemo012, total_historico: 1 },
+    'projeto-demo-013': { avaliacao: avaliacaoDemo013, total_historico: 1 },
+    'projeto-demo-014': { avaliacao: avaliacaoDemo014, total_historico: 1 },
+    'projeto-demo-015': { avaliacao: avaliacaoDemo015, total_historico: 1 },
+    'projeto-demo-016': { avaliacao: avaliacaoDemo016, total_historico: 1 },
+    'projeto-demo-017': { avaliacao: avaliacaoDemo017, total_historico: 1 },
+    'projeto-demo-018': { avaliacao: avaliacaoDemo018, total_historico: 1 },
+    'projeto-demo-019': { avaliacao: avaliacaoDemo019, total_historico: 1 },
+    'projeto-demo-020': { avaliacao: avaliacaoDemo020, total_historico: 1 },
+    'projeto-demo-021': { avaliacao: avaliacaoDemo021, total_historico: 1 },
+    'projeto-demo-022': { avaliacao: avaliacaoDemo022, total_historico: 1 },
+    'projeto-demo-023': { avaliacao: avaliacao030, total_historico: 1 },
+    'projeto-demo-024': { avaliacao: avaliacao024, total_historico: 1 },
+    'projeto-demo-025': { avaliacao: avaliacaoDemo025, total_historico: 1 },
+    'projeto-demo-026': { avaliacao: avaliacao026, total_historico: 1 },
+    'projeto-demo-027': { avaliacao: avaliacao031, total_historico: 1 },
+    'projeto-demo-028': { avaliacao: avaliacaoDemo028, total_historico: 1 },
+    'projeto-demo-029': { avaliacao: avaliacao029, total_historico: 1 },
+    'projeto-demo-030': { avaliacao: avaliacao032, total_historico: 1 },
+    'projeto-demo-031': { avaliacao: avaliacaoDemo031, total_historico: 1 },
+    'projeto-demo-032': { avaliacao: avaliacaoDemo032b, total_historico: 1 },
+    'projeto-demo-033': { avaliacao: avaliacaoDemo033, total_historico: 1 },
+    'projeto-demo-034': { avaliacao: avaliacaoDemo034, total_historico: 1 },
+    'projeto-demo-035': { avaliacao: avaliacaoDemo035, total_historico: 1 },
+  };
+  return avaliacoes[projetoId] || { avaliacao: null, total_historico: 0 };
+}

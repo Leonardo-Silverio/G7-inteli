@@ -85,3 +85,46 @@ export function getStatusCheckpointColor(status: StatusCheckpoint): string {
   };
   return colors[status] || 'bg-gray-100 text-gray-600';
 }
+
+export function formatFieldLabel(key: string): string {
+  const labels: Record<string, string> = {
+    descricao_projeto: 'Descrição do Projeto',
+    proposta_solucao: 'Proposta da Solução',
+    focos_azul: 'Focos da Azul',
+    impacto_rotas: 'Impacto nas Rotas',
+    existe_semelhante: 'Existe Projeto Semelhante',
+    semelhante_descricao: 'Descrição do Projeto Semelhante',
+    prazo_mercado: 'Prazo Estimado para Mercado',
+    dependencias_criticas: 'Dependências Críticas',
+    diferencial_concorrentes: 'Diferencial dos Concorrentes',
+    info_adicional: 'Informações Adicionais',
+    material_desenvolvido: 'Material Desenvolvido',
+    produtos_marcas: 'Produtos/Marcas da Azul Envolvidos',
+    tom_comunicacao: 'Tom de Comunicação (1-5)',
+    mudancas_checkpoint1: 'Mudanças desde o Checkpoint 1',
+    feedback_enderecado: 'Feedback do Checkpoint 1 Endereçado',
+    limitacoes_internas: 'Limitações/Decisões Internas',
+    material_final: 'Material Final (ou Quase Final)',
+    areas_envolvidas_acordo: 'Áreas Envolvidas de Acordo',
+    dados_clientes: 'Coleta/Uso de Dados de Clientes',
+    revisao_juridica: 'Revisão Jurídica/Compliance',
+    tarifas_confirmadas: 'Tarifas/Benefícios Confirmados',
+    risco_interpretacao: 'Risco de Má Interpretação',
+    conflito_mensagem: 'Conflito com Campanhas em Andamento',
+    data_lancamento: 'Data Prevista de Lançamento',
+    riscos_incertos: 'Riscos/Incertezas Antes do Lançamento',
+  };
+  return labels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+}
+
+export function formatFieldValue(_key: string, value: unknown): string {
+  if (value === null || value === undefined) return '—';
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '—';
+    return value.map((v) => String(v)).join(', ');
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value, null, 2);
+  }
+  return String(value);
+}
